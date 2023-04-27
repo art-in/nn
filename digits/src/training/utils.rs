@@ -1,4 +1,4 @@
-use crate::val::BVal;
+use autograd::val::BVal;
 
 pub fn label_to_outputs(label: u8) -> Vec<f64> {
     assert!(label <= 9, "label is out of valid range");

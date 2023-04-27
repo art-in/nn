@@ -1,5 +1,5 @@
 {
-	"name": "autograd",
+	"name": "nn",
 	"build": {
 		"dockerfile": "Dockerfile"
 	},

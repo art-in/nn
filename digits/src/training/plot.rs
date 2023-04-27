@@ -1,7 +1,7 @@
 use plotters::prelude::*;
 
 pub fn plot_losses(losses: &Vec<f64>, errors_percents: &Vec<f64>) {
-    let root = BitMapBackend::new("plots/losses.bmp", (1280, 480)).into_drawing_area();
+    let root = BitMapBackend::new("digits/plots/losses.bmp", (1280, 480)).into_drawing_area();
     root.fill(&WHITE).expect("failed to fill drawing area");
 
     let max_loss = losses.iter().copied().reduce(f64::max).unwrap();

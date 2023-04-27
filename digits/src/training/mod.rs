@@ -1,11 +1,11 @@
+use autograd::{mlp::MLP, val::BVal};
+
 use crate::{
-    digits_model::mnist::{images_it::ImagesIt, labels_it::LabelsIt},
-    mlp::MLP,
-    plot::plot_losses,
-    val::BVal,
+    mnist::{images_it::ImagesIt, labels_it::LabelsIt},
+    training::plot::plot_losses,
 };
 
-mod mnist;
+mod plot;
 mod utils;
 
 const BATCHES: u32 = 6000;
@@ -17,8 +17,8 @@ const LEARNING_RATE_END: f64 = 0.001;
 pub fn train() -> MLP {
     let net = MLP::new(vec![784, 30, 10]);
 
-    let images_it = ImagesIt::new("data/train-images-idx3-ubyte");
-    let labels_it = LabelsIt::new("data/train-labels-idx1-ubyte");
+    let images_it = ImagesIt::new("digits/data/train-images-idx3-ubyte");
+    let labels_it = LabelsIt::new("digits/data/train-labels-idx1-ubyte");
 
     assert!(
         BATCHES * BATCH_SIZE <= images_it.images_count(),
