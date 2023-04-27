@@ -1,0 +1,18 @@
+{
+	"name": "autograd",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"eamodio.gitlens",
+				"rust-lang.rust-analyzer",
+				"tamasfe.even-better-toml",
+				"serayuzgur.crates",
+				"jedeop.crates-completer",
+				"mutantdino.resourcemonitor"
+			]
+		}
+	}
+}

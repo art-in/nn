@@ -1,0 +1,17 @@
+{
+    "editor.formatOnSave": true,
+    // match default rust style
+    "editor.tabSize": 4,
+    "editor.semanticTokenColorCustomizations": {
+        "rules": {
+            "*.mutable": {
+                // do not underline mutable variables, because it's too much visual noise
+                "underline": false,
+            }
+        }
+    },
+    "rust-analyzer.linkedProjects": [
+        "./Cargo.toml",
+    ],
+    "resmon.show.cpufreq": false,
+}
