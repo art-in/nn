@@ -1,4 +1,4 @@
-use autograd::{mlp::MLP, val::BVal};
+use autograd::{network::Network, val::BVal};
 
 use crate::{
     mnist::{images_it::ImagesIt, labels_it::LabelsIt},
@@ -14,15 +14,13 @@ const BATCH_STEPS: u32 = 1;
 const LEARNING_RATE_START: f64 = 0.01;
 const LEARNING_RATE_END: f64 = 0.001;
 
-pub fn train() -> MLP {
-    let net = MLP::new(vec![784, 30, 10]);
-
+pub fn train(net: &mut Network) {
     let images_it = ImagesIt::new("digits/data/train-images-idx3-ubyte");
     let labels_it = LabelsIt::new("digits/data/train-labels-idx1-ubyte");
 
     assert!(
         BATCHES * BATCH_SIZE <= images_it.images_count(),
-        "not enough images"
+        "not enough images in input stream"
     );
 
     let mut images_and_labels_it = images_it.zip(labels_it);
@@ -77,7 +75,7 @@ pub fn train() -> MLP {
                 param.borrow_mut().d -= learning_rate * grad;
             }
 
-            // log
+            // log / plot
             if step % 1 == 0 {
                 println!(
                     "batch = {batch_idx}, \
@@ -91,17 +89,4 @@ pub fn train() -> MLP {
             }
         }
     }
-
-    for param in &net.parameters() {
-        assert!(
-            param.borrow().d.is_finite(),
-            "param.d should be finite number"
-        );
-        assert!(
-            param.borrow().grad.is_finite(),
-            "param.grad should be finite number"
-        );
-    }
-
-    net
 }
