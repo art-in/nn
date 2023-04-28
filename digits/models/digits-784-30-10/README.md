@@ -2,8 +2,13 @@ network structure:
 
 ```
 input: 784 (28 * 28 pixel image)
+
 hidden layer: 30 neurons
 ouput layer: 10 neurons
+
+activation function: tanh
+initialization weights: (-1, 1) normal distribution
+optimization process: pure stochastic gradient descent
 ```
 
 training:
