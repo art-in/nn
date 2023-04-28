@@ -118,7 +118,7 @@ mod tests {
     }
 
     #[test]
-    fn classifier() {
+    fn classification() {
         let inputs: Vec<Vec<f64>> = vec![
             vec![2.0, 3.0, -1.0],
             vec![3.0, -1.0, 0.5],
