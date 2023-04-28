@@ -12,4 +12,5 @@ pub enum Op {
     Add,
     Mul,
     Pow,
+    Tanh,
 }

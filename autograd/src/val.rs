@@ -142,7 +142,7 @@ mod tests {
         let n = &x1w1x2w2 + &b;
         let o = n.tanh();
 
-        assert_eq!(o.borrow().d, 0.7071067811865475);
+        assert_eq!(o.borrow().d, 0.7071067811865476);
 
         o.borrow_mut().grad = 1.0;
         o.backward();

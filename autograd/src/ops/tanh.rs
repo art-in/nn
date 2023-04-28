@@ -1,9 +1,28 @@
-use crate::val::BVal;
+use crate::val::{BVal, Val};
+
+use super::Op;
+
+fn backward(child: &BVal) {
+    let parent = &child.borrow().parents[0];
+
+    let child_d = child.borrow().d;
+    let child_grad = child.borrow().grad;
+
+    parent.borrow_mut().grad += (1.0 - child_d.powf(2.0)) * child_grad;
+}
 
 impl BVal {
     pub fn tanh(&self) -> Self {
-        let e = BVal::new(std::f64::consts::E).pow_val(&(2.0 * self));
-        &(&e - 1.0) / &(&e + 1.0)
+        let e = std::f64::consts::E.powf(2.0 * self.borrow().d);
+        let d = (e - 1.0) / (e + 1.0);
+
+        BVal::new_val(Val {
+            d,
+            parents: vec![self.clone()],
+            op: Op::Tanh,
+            grad: 0.0,
+            backward,
+        })
     }
 }
 
@@ -19,7 +38,7 @@ mod tests {
         let b = a.tanh();
 
         assert_eq!(b.borrow().d, 0.9051482536448664);
-        assert_eq!(b.borrow().op, Op::Mul);
+        assert_eq!(b.borrow().op, Op::Tanh);
     }
 
     #[test]
@@ -30,8 +49,8 @@ mod tests {
         assert!(a.borrow().parents.is_empty());
         assert!(a.borrow().op == Op::None);
 
-        assert!(b.borrow().parents.len() == 2);
-        assert!(b.borrow().op == Op::Mul);
+        assert!(b.borrow().parents.len() == 1);
+        assert!(b.borrow().op == Op::Tanh);
     }
 
     #[test]
@@ -42,7 +61,7 @@ mod tests {
         b.borrow_mut().grad = 5.0;
         b.backward();
 
-        assert_eq!(a.borrow().grad, 0.903533194618244);
+        assert_eq!(a.borrow().grad, 0.9035331946182429);
         assert_eq!(b.borrow().grad, 5.0);
     }
 }
