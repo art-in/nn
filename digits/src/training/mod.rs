@@ -3,6 +3,7 @@ use autograd::{network::Network, val::BVal};
 use crate::{
     mnist::{images_it::ImagesIt, labels_it::LabelsIt},
     training::plot::plot_losses,
+    utils::predict,
 };
 
 mod plot;
@@ -52,7 +53,7 @@ pub fn train(net: &mut Network) {
                 let loss = utils::calc_prediction_loss(&output, &expected);
                 batch_loss = &batch_loss + &loss;
 
-                if *label != utils::predict(&output) {
+                if *label != predict(&output) {
                     batch_errors += 1;
                 }
             }
@@ -76,7 +77,7 @@ pub fn train(net: &mut Network) {
             }
 
             // log / plot
-            if step % 1 == 0 {
+            if batch_idx % 1 == 0 {
                 println!(
                     "batch = {batch_idx}, \
                     step = {step}, \
@@ -85,7 +86,10 @@ pub fn train(net: &mut Network) {
                     batch_errors_percent = {}%",
                     batch_errors_percent * 100 as f64
                 );
-                plot_losses(&losses, &errors_percents);
+
+                if batch_idx % 10 == 0 {
+                    plot_losses(&losses, &errors_percents);
+                }
             }
         }
     }

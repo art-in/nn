@@ -35,6 +35,14 @@ impl ImagesIt {
         (self.image_width, self.image_height)
     }
 
+    pub fn image_width(&self) -> u32 {
+        self.image_width
+    }
+
+    pub fn image_height(&self) -> u32 {
+        self.image_height
+    }
+
     pub fn images_count(&self) -> u32 {
         self.images_count
     }

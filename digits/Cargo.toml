@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 autograd = { path = "../autograd" }
 plotters = "0.3.4"
+image = "0.24.6"
