@@ -87,7 +87,7 @@ pub fn train(net: &mut Network) {
                     batch_errors_percent * 100 as f64
                 );
 
-                if batch_idx % 10 == 0 {
+                if batch_idx % 50 == 0 {
                     plot_losses(&losses, &errors_percents);
                 }
             }

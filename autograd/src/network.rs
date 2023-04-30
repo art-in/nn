@@ -1,5 +1,5 @@
 use std::{
-    fs::File,
+    fs::{self, File},
     io::{BufReader, BufWriter},
 };
 
@@ -48,7 +48,20 @@ impl Network {
         }
     }
 
-    pub fn serialize_to_file(&self, path: &str) {
+    fn get_layer_sizes(&self) -> Vec<usize> {
+        let mut layers_sizes: Vec<usize> = Vec::new();
+
+        // input size
+        layers_sizes.push(self.layers[0].neurons[0].weights.len());
+
+        for layer in &self.layers {
+            layers_sizes.push(layer.neurons.len());
+        }
+
+        layers_sizes
+    }
+
+    fn serialize_to_file_path(&self, path: &str) {
         let file = File::create(path).expect("failed to create file");
         let mut writer = BufWriter::new(file);
 
@@ -67,7 +80,13 @@ impl Network {
         }
     }
 
-    pub fn deserialize_from_file(path: &str) -> Self {
+    pub fn serialize_to_file(&self, dir: &str, file_name_prefix: &str) {
+        let path = utils::get_model_file_path(dir, file_name_prefix, &self.get_layer_sizes());
+        println!("serializing network to file: {}", path);
+        self.serialize_to_file_path(&path);
+    }
+
+    fn deserialize_from_file_path(path: &str) -> Self {
         let file = File::open(path).expect("failed to open file");
         let mut reader = BufReader::new(file);
 
@@ -92,6 +111,22 @@ impl Network {
         }
 
         net
+    }
+
+    pub fn new_or_deserialize_from_file(
+        layers_sizes: Vec<usize>,
+        dir: &str,
+        file_name_prefix: &str,
+    ) -> Network {
+        let path = utils::get_model_file_path(dir, file_name_prefix, &layers_sizes);
+
+        if fs::metadata(&path).is_ok() {
+            println!("deserializing network from file: {}", path);
+            Network::deserialize_from_file_path(&path)
+        } else {
+            println!("initializing network: {:?}", layers_sizes);
+            Network::new(layers_sizes)
+        }
     }
 }
 
@@ -159,12 +194,12 @@ mod tests {
 
     #[test]
     fn serialization() {
-        const FILE_PATH: &str = "test.nmd";
+        const FILE_PATH: &str = "test.nm";
 
         let net1 = Network::new(vec![3, 4, 4, 1]);
-        net1.serialize_to_file(FILE_PATH);
+        net1.serialize_to_file_path(FILE_PATH);
 
-        let net2 = Network::deserialize_from_file(FILE_PATH);
+        let net2 = Network::deserialize_from_file_path(FILE_PATH);
 
         fs::remove_file(FILE_PATH).expect("failed to remove file");
 

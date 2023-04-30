@@ -25,10 +25,6 @@ pub fn test(net: &Network) {
         errors += if is_error { 1 } else { 0 };
         count += 1;
 
-        let errors_percent = errors as f64 / count as f64;
-
-        println!("count: {count}, errors: {errors}, errors_percent: {errors_percent}");
-
         // save failed image
         if is_error {
             let image = create_image(&image, image_width, image_height);
@@ -37,4 +33,9 @@ pub fn test(net: &Network) {
                 .expect("failed to save image");
         }
     }
+
+    println!(
+        "count: {count}, errors: {errors}, errors_percent: {}",
+        errors as f64 / count as f64
+    );
 }
