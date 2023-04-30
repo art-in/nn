@@ -15,7 +15,7 @@ type BackwardFn = fn(&BVal) -> ();
 pub struct Val {
     pub d: f64,
     pub op: Op,
-    pub parents: Vec<BVal>,
+    pub parents: (Option<BVal>, Option<BVal>),
     pub grad: f64,
     pub backward: BackwardFn,
 }
@@ -24,7 +24,7 @@ impl Val {
     fn new(d: f64) -> Self {
         Val {
             d,
-            parents: Vec::new(),
+            parents: (None, None),
             op: Op::None,
             grad: 0.0,
             backward: |_| (),
@@ -78,8 +78,13 @@ impl BVal {
             if !visited.contains(&node.as_ptr()) {
                 visited.insert(node.as_ptr());
 
-                for parent in &node.borrow().parents {
-                    build_topo(parent.clone(), visited, topo);
+                let node_ref = node.borrow();
+                let parents = [node_ref.parents.0.as_ref(), node_ref.parents.1.as_ref()];
+
+                for parent in parents {
+                    if let Some(parent) = parent {
+                        build_topo(parent.clone(), visited, topo);
+                    }
                 }
 
                 topo.push(node.clone());

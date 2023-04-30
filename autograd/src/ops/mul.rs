@@ -4,12 +4,14 @@ use crate::val::{BVal, Val};
 
 use super::Op;
 
-fn backward(val: &BVal) {
-    let lhs = &val.borrow().parents[0];
-    let rhs = &val.borrow().parents[1];
+fn backward(child: &BVal) {
+    let child = child.borrow();
 
-    lhs.borrow_mut().grad += rhs.borrow().d * val.borrow().grad;
-    rhs.borrow_mut().grad += lhs.borrow().d * val.borrow().grad;
+    let lhs = child.parents.0.as_ref().unwrap();
+    let rhs = child.parents.1.as_ref().unwrap();
+
+    lhs.borrow_mut().grad += rhs.borrow().d * child.grad;
+    rhs.borrow_mut().grad += lhs.borrow().d * child.grad;
 }
 
 impl Mul<&BVal> for &BVal {
@@ -18,7 +20,7 @@ impl Mul<&BVal> for &BVal {
     fn mul(self, other: &BVal) -> Self::Output {
         BVal::new_val(Val {
             d: self.borrow().d * other.borrow().d,
-            parents: vec![self.clone(), other.clone()],
+            parents: (Some(self.clone()), Some(other.clone())),
             op: Op::Mul,
             grad: 0.0,
             backward,
@@ -70,15 +72,17 @@ mod tests {
         let b = BVal::new(2.0);
         let c = &a * &b;
 
-        assert!(a.borrow().parents.is_empty());
-        assert!(b.borrow().parents.is_empty());
+        assert!(a.borrow().parents.0.is_none());
+        assert!(a.borrow().parents.1.is_none());
+
+        assert!(b.borrow().parents.0.is_none());
+        assert!(b.borrow().parents.1.is_none());
 
         assert!(a.borrow().op == Op::None);
         assert!(b.borrow().op == Op::None);
 
-        assert!(c.borrow().parents.len() == 2);
-        assert!(c.borrow().parents[0] == a);
-        assert!(c.borrow().parents[1] == b);
+        assert!(c.borrow().parents.0.as_ref().unwrap() == &a);
+        assert!(c.borrow().parents.1.as_ref().unwrap() == &b);
 
         assert!(c.borrow().op == Op::Mul);
     }
@@ -90,20 +94,22 @@ mod tests {
         let c = &a * &b;
         let d = &c * &a;
 
-        assert!(a.borrow().parents.is_empty());
-        assert!(b.borrow().parents.is_empty());
+        assert!(a.borrow().parents.0.is_none());
+        assert!(a.borrow().parents.1.is_none());
+
+        assert!(b.borrow().parents.0.is_none());
+        assert!(b.borrow().parents.1.is_none());
+
         assert!(a.borrow().op == Op::None);
         assert!(b.borrow().op == Op::None);
 
-        assert!(c.borrow().parents.len() == 2);
-        assert!(c.borrow().parents[0].as_ptr() == a.as_ptr());
-        assert!(c.borrow().parents[1].as_ptr() == b.as_ptr());
+        assert!(c.borrow().parents.0.as_ref().unwrap().as_ptr() == a.as_ptr());
+        assert!(c.borrow().parents.1.as_ref().unwrap().as_ptr() == b.as_ptr());
 
         assert!(c.borrow().op == Op::Mul);
 
-        assert!(d.borrow().parents.len() == 2);
-        assert!(d.borrow().parents[0].as_ptr() == c.as_ptr());
-        assert!(d.borrow().parents[1].as_ptr() == a.as_ptr());
+        assert!(d.borrow().parents.0.as_ref().unwrap().as_ptr() == c.as_ptr());
+        assert!(d.borrow().parents.1.as_ref().unwrap().as_ptr() == a.as_ptr());
 
         assert!(d.borrow().op == Op::Mul);
     }

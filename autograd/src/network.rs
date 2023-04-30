@@ -222,7 +222,6 @@ mod tests {
         for (param1, param2) in params_it {
             assert_eq!(param1.borrow().d, param2.borrow().d);
             assert_eq!(param1.borrow().op, param2.borrow().op);
-            assert_eq!(param1.borrow().parents.len(), param2.borrow().parents.len());
             assert_eq!(param1.borrow().grad, param2.borrow().grad);
         }
     }

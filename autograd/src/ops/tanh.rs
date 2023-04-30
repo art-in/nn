@@ -3,12 +3,10 @@ use crate::val::{BVal, Val};
 use super::Op;
 
 fn backward(child: &BVal) {
-    let parent = &child.borrow().parents[0];
+    let child = child.borrow();
+    let parent = child.parents.0.as_ref().unwrap();
 
-    let child_d = child.borrow().d;
-    let child_grad = child.borrow().grad;
-
-    parent.borrow_mut().grad += (1.0 - child_d.powf(2.0)) * child_grad;
+    parent.borrow_mut().grad += (1.0 - child.d.powf(2.0)) * child.grad;
 }
 
 impl BVal {
@@ -18,7 +16,7 @@ impl BVal {
 
         BVal::new_val(Val {
             d,
-            parents: vec![self.clone()],
+            parents: (Some(self.clone()), None),
             op: Op::Tanh,
             grad: 0.0,
             backward,
@@ -46,10 +44,13 @@ mod tests {
         let a = BVal::new(1.5);
         let b = a.tanh();
 
-        assert!(a.borrow().parents.is_empty());
+        assert!(a.borrow().parents.0.is_none());
+        assert!(a.borrow().parents.1.is_none());
+
         assert!(a.borrow().op == Op::None);
 
-        assert!(b.borrow().parents.len() == 1);
+        assert!(b.borrow().parents.0.is_some());
+        assert!(b.borrow().parents.1.is_none());
         assert!(b.borrow().op == Op::Tanh);
     }
 
