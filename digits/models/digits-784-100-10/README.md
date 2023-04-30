@@ -22,7 +22,7 @@ epoch 4: batches 6k (10 images per patch), learning rate (linear descent) 0.01 t
 epoch 5: batches 6k (10 images per patch), learning rate (linear descent) 0.01 to 0.001
 ```
 
-testing (error statistics on test set images after epoch 5):
+testing (error statistics on test set after epoch 5):
 
 ```
 count: 60000, errors: 5407, errors_percent: 0.09011666666666666
