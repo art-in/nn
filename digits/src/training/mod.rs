@@ -71,25 +71,24 @@ pub fn train(net: &mut Network) {
             // update
             let learning_rate = LEARNING_RATE_START
                 - (LEARNING_RATE_START - LEARNING_RATE_END) * batch_idx as f64 / BATCHES as f64;
+
             for param in &net.parameters() {
                 let grad = param.borrow().grad;
                 param.borrow_mut().d -= learning_rate * grad;
             }
 
             // log / plot
-            if batch_idx % 1 == 0 {
-                println!(
-                    "batch = {batch_idx}, \
+            println!(
+                "batch = {batch_idx}, \
                     step = {step}, \
                     learning_rate = {learning_rate}, \
                     batch_loss = {batch_loss}, \
                     batch_errors_percent = {}%",
-                    batch_errors_percent * 100 as f64
-                );
+                batch_errors_percent * 100 as f64
+            );
 
-                if batch_idx % 50 == 0 {
-                    plot_losses(&losses, &errors_percents);
-                }
+            if batch_idx % 50 == 0 {
+                plot_losses(&losses, &errors_percents);
             }
         }
     }

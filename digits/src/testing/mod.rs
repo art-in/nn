@@ -6,7 +6,7 @@ use crate::{
     utils::predict,
 };
 
-pub fn test(net: &Network) {
+pub fn test(net: &Network, save_failed_images: bool) {
     let images_it = ImagesIt::new("digits/data/t10k-images-idx3-ubyte");
     let labels_it = LabelsIt::new("digits/data/t10k-labels-idx1-ubyte");
 
@@ -26,7 +26,7 @@ pub fn test(net: &Network) {
         count += 1;
 
         // save failed image
-        if is_error {
+        if is_error && save_failed_images {
             let image = create_image(&image, image_width, image_height);
             image
                 .save(format!("digits/images/error-{idx}-{label}.png"))

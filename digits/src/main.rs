@@ -20,5 +20,5 @@ fn main() {
 
     net.serialize_to_file(MODELS_DIR, MODEL_FILE_NAME_PREFIX);
 
-    testing::test(&net);
+    testing::test(&net, false);
 }
