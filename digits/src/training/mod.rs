@@ -12,10 +12,14 @@ mod utils;
 const BATCHES: u32 = 6000;
 const BATCH_SIZE: u32 = 10;
 const BATCH_STEPS: u32 = 1;
+
 const LEARNING_RATE_START: f64 = 0.01;
 const LEARNING_RATE_END: f64 = 0.001;
 
-pub fn train(net: &mut Network) {
+const PLOT_LOSSES_EACH_NTH_BATCH: u32 = 50;
+const SERIALIZE_MODEL_EACH_NTH_BATCH: u32 = 1000;
+
+pub fn train(net: &mut Network, models_dir: &str, model_file_name_prefix: &str) {
     let images_it = ImagesIt::new("digits/data/train-images-idx3-ubyte");
     let labels_it = LabelsIt::new("digits/data/train-labels-idx1-ubyte");
 
@@ -80,15 +84,19 @@ pub fn train(net: &mut Network) {
             // log / plot
             println!(
                 "batch = {batch_idx}, \
-                    step = {step}, \
-                    learning_rate = {learning_rate}, \
-                    batch_loss = {batch_loss}, \
-                    batch_errors_percent = {}%",
+                step = {step}, \
+                learning_rate = {learning_rate}, \
+                batch_loss = {batch_loss}, \
+                batch_errors_percent = {}%",
                 batch_errors_percent * 100 as f64
             );
 
-            if batch_idx % 50 == 0 {
+            if batch_idx % PLOT_LOSSES_EACH_NTH_BATCH == 0 {
                 plot_losses(&losses, &errors_percents);
+            }
+
+            if batch_idx % SERIALIZE_MODEL_EACH_NTH_BATCH == 0 {
+                net.serialize_to_file(models_dir, model_file_name_prefix);
             }
         }
     }
