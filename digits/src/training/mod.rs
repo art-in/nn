@@ -91,11 +91,11 @@ pub fn train(net: &mut Network, models_dir: &str, model_file_name_prefix: &str) 
                 batch_errors_percent * 100 as f64
             );
 
-            if batch_idx > 0 && (batch_idx % PLOT_LOSSES_EACH_NTH_BATCH == 0) {
+            if (batch_idx + 1) % PLOT_LOSSES_EACH_NTH_BATCH == 0 {
                 plot_losses(&losses, &errors_percents);
             }
 
-            if batch_idx > 0 && (batch_idx % SERIALIZE_MODEL_EACH_NTH_BATCH == 0) {
+            if (batch_idx + 1) % SERIALIZE_MODEL_EACH_NTH_BATCH == 0 {
                 net.serialize_to_file(models_dir, model_file_name_prefix);
             }
         }
