@@ -7,12 +7,21 @@ pub struct Neuron {
 
 impl Neuron {
     pub fn new(inputs_count: usize) -> Self {
+        let mut weight_deviation: f64 = 0.15;
+
+        // make initial weights lower when number of inputs goes up. big weights with lots of inputs
+        // makes mul/sum result very big, thus activation function produce numbers close to 1/-1,
+        // which makes gradients very small and neuron params disabled from learning ("dead neuron")
+        weight_deviation = weight_deviation.min(1.0 / (inputs_count as f64).sqrt());
+
         let mut weights = Vec::new();
-        weights.resize_with(inputs_count as usize, || BVal::new(gen_rand_normal()));
+        weights.resize_with(inputs_count as usize, || {
+            BVal::new(gen_rand_normal(weight_deviation))
+        });
 
         Neuron {
             weights,
-            bias: BVal::new(gen_rand_normal()),
+            bias: BVal::new(gen_rand_normal(0.01)),
         }
     }
 

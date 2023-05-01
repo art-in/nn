@@ -5,9 +5,9 @@ use std::{
 
 use rand_distr::{Distribution, Normal};
 
-// generates random number with normal distribution in range (-1, 1)
-pub fn gen_rand_normal() -> f64 {
-    let normal = Normal::new(0.0, 0.15).unwrap();
+// generates random number with normal distribution
+pub fn gen_rand_normal(deviation: f64) -> f64 {
+    let normal = Normal::new(0.0, deviation).unwrap();
     normal.sample(&mut rand::thread_rng())
 }
 
@@ -60,7 +60,7 @@ mod tests {
     #[test]
     fn test_gen_rand_normal() {
         for _ in 0..1_000_000 {
-            let val = gen_rand_normal();
+            let val = gen_rand_normal(0.15);
 
             if val.abs() > 0.9 {
                 panic!();
