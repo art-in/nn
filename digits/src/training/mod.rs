@@ -1,4 +1,6 @@
-use autograd::{network::Network, val::BVal};
+use std::time::SystemTime;
+
+use autograd::network::Network;
 
 use crate::{
     mnist::{images_it::ImagesIt, labels_it::LabelsIt},
@@ -11,7 +13,6 @@ mod utils;
 
 const BATCHES: u32 = 6000;
 const BATCH_SIZE: u32 = 10;
-const BATCH_STEPS: u32 = 1;
 
 const LEARNING_RATE_START: f64 = 0.01;
 const LEARNING_RATE_END: f64 = 0.001;
@@ -34,6 +35,8 @@ pub fn train(net: &mut Network, models_dir: &str, model_file_name_prefix: &str) 
     let mut errors_percents = Vec::<f64>::new();
 
     for batch_idx in 0..BATCHES {
+        let batch_start = SystemTime::now();
+
         // take next batch of images
         let mut batch = Vec::<(Vec<f64>, u8)>::new();
 
@@ -45,59 +48,60 @@ pub fn train(net: &mut Network, models_dir: &str, model_file_name_prefix: &str) 
             );
         }
 
-        for step in 0..BATCH_STEPS {
-            // forward
-            let mut batch_loss = BVal::new(0.0);
-            let mut batch_errors = 0;
+        // forward
+        let mut batch_loss = net.pool.pull(0.0);
+        let mut batch_errors = 0;
 
-            for (image, label) in &batch {
-                let output = net.forward(&image);
-                let expected = utils::label_to_outputs(*label);
+        for (image, label) in &batch {
+            let output = net.forward(&image);
+            let expected = utils::label_to_outputs(*label);
 
-                let loss = utils::calc_prediction_loss(&output, &expected);
-                batch_loss = &batch_loss + &loss;
+            let loss = utils::calc_prediction_loss(&output, &expected, &net.pool);
+            batch_loss = &batch_loss + &loss;
 
-                if *label != predict(&output) {
-                    batch_errors += 1;
-                }
-            }
-
-            let batch_errors_percent = batch_errors as f64 / batch.len() as f64;
-
-            losses.push(batch_loss.borrow().d);
-            errors_percents.push(batch_errors_percent);
-
-            // backward
-            net.reset_grad();
-            batch_loss.borrow_mut().grad = 1.0;
-            batch_loss.backward();
-
-            // update
-            let learning_rate = LEARNING_RATE_START
-                - (LEARNING_RATE_START - LEARNING_RATE_END) * batch_idx as f64 / BATCHES as f64;
-
-            for param in &net.parameters() {
-                let grad = param.borrow().grad;
-                param.borrow_mut().d -= learning_rate * grad;
-            }
-
-            // log / plot
-            println!(
-                "batch = {batch_idx}, \
-                step = {step}, \
-                learning_rate = {learning_rate}, \
-                batch_loss = {batch_loss}, \
-                batch_errors_percent = {}%",
-                batch_errors_percent * 100 as f64
-            );
-
-            if (batch_idx + 1) % PLOT_LOSSES_EACH_NTH_BATCH == 0 {
-                plot_losses(&losses, &errors_percents);
-            }
-
-            if (batch_idx + 1) % SERIALIZE_MODEL_EACH_NTH_BATCH == 0 {
-                net.serialize_to_file(models_dir, model_file_name_prefix);
+            if *label != predict(&output) {
+                batch_errors += 1;
             }
         }
+
+        let batch_errors_percent = batch_errors as f64 / batch.len() as f64;
+
+        losses.push(batch_loss.borrow().d);
+        errors_percents.push(batch_errors_percent);
+
+        // backward
+        net.reset_grad();
+        batch_loss.borrow_mut().grad = 1.0;
+        batch_loss.backward();
+
+        // update
+        let learning_rate = LEARNING_RATE_START
+            - (LEARNING_RATE_START - LEARNING_RATE_END) * batch_idx as f64 / BATCHES as f64;
+
+        for param in &net.parameters() {
+            let grad = param.borrow().grad;
+            param.borrow_mut().d -= learning_rate * grad;
+        }
+
+        // log / plot
+        if (batch_idx + 1) % PLOT_LOSSES_EACH_NTH_BATCH == 0 {
+            plot_losses(&losses, &errors_percents);
+        }
+
+        if (batch_idx + 1) % SERIALIZE_MODEL_EACH_NTH_BATCH == 0 {
+            net.serialize_to_file(models_dir, model_file_name_prefix);
+        }
+
+        let batch_duration = SystemTime::now().duration_since(batch_start).unwrap();
+
+        println!(
+            "batch = {batch_idx}, \
+            duration = {}ms, \
+            learning_rate = {learning_rate}, \
+            loss = {batch_loss}, \
+            errors_percent = {}%",
+            batch_duration.as_millis(),
+            batch_errors_percent * 100 as f64,
+        );
     }
 }

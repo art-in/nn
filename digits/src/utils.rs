@@ -19,7 +19,7 @@ pub fn predict(output: &Vec<BVal>) -> u8 {
 
 #[cfg(test)]
 mod tests {
-    use autograd::val::BVal;
+    use autograd::{pool::BValPool, val::BVal};
 
     use super::*;
 
@@ -54,8 +54,10 @@ mod tests {
             vec![0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0],
         ];
 
+        let pool = BValPool::default();
+
         for (label, output) in cases.iter().enumerate() {
-            let output: Vec<BVal> = output.iter().map(|o| BVal::new(*o)).collect();
+            let output: Vec<BVal> = output.iter().map(|o| pool.pull(*o)).collect();
             assert_eq!(predict(&output), label as u8);
         }
     }

@@ -3,25 +3,27 @@ use std::{
     io::{BufReader, BufWriter},
 };
 
-use crate::{layer::Layer, utils, val::BVal};
+use crate::{layer::Layer, pool::BValPool, utils, val::BVal};
 
 pub struct Network {
     pub layers: Vec<Layer>,
+    pub pool: BValPool,
 }
 
 impl Network {
     pub fn new(layers_sizes: Vec<usize>) -> Network {
         let mut layers = Vec::new();
+        let pool = BValPool::default();
 
         for i in 0..(layers_sizes.len() - 1) {
-            layers.push(Layer::new(layers_sizes[i], layers_sizes[i + 1]))
+            layers.push(Layer::new(layers_sizes[i], layers_sizes[i + 1], &pool))
         }
 
-        Network { layers }
+        Network { layers, pool }
     }
 
     pub fn forward(&self, inputs: &Vec<f64>) -> Vec<BVal> {
-        let mut res: Vec<BVal> = inputs.iter().map(|v| BVal::new(*v)).collect();
+        let mut res: Vec<BVal> = inputs.iter().map(|v| self.pool.pull(*v)).collect();
 
         for layer in &self.layers {
             res = layer.forward(res);
@@ -164,16 +166,16 @@ mod tests {
 
         let net = Network::new(vec![3, 4, 4, 1]);
 
-        let mut last_total_loss = BVal::new(0.0);
+        let mut last_total_loss = 0.0;
 
         for _ in 0..100 {
             // forward
-            let mut total_loss = BVal::new(0.0);
+            let mut total_loss = net.pool.pull(0.0);
             for (input, expected) in inputs.iter().zip(expecteds.iter()) {
                 let output = &net.forward(input)[0];
                 let loss = (*expected - output).pow(2.0);
                 total_loss = &total_loss + &loss;
-                last_total_loss = total_loss.clone();
+                last_total_loss = total_loss.borrow().d;
             }
 
             // backward
@@ -189,7 +191,7 @@ mod tests {
             }
         }
 
-        assert!(last_total_loss.borrow().d < 0.1);
+        assert!(last_total_loss < 0.1);
     }
 
     #[test]

@@ -11,7 +11,7 @@ const MODEL_FILE_NAME_PREFIX: &str = "digits";
 
 fn main() {
     let mut net = Network::new_or_deserialize_from_file(
-        vec![784, 200, 80, 10],
+        vec![784, 800, 300, 10],
         MODELS_DIR,
         MODEL_FILE_NAME_PREFIX,
     );

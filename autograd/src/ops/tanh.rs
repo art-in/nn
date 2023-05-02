@@ -14,7 +14,7 @@ impl BVal {
         let e = std::f64::consts::E.powf(2.0 * self.borrow().d);
         let d = (e - 1.0) / (e + 1.0);
 
-        BVal::new_val(Val {
+        self.pool().pull_val(Val {
             d,
             parents: (Some(self.clone()), None),
             op: Op::Tanh,
@@ -26,13 +26,13 @@ impl BVal {
 
 #[cfg(test)]
 mod tests {
-    use crate::ops::Op;
-
-    use super::*;
+    use crate::{ops::Op, pool::BValPool};
 
     #[test]
     fn forward() {
-        let a = BVal::new(1.5);
+        let pool = BValPool::default();
+
+        let a = pool.pull(1.5);
         let b = a.tanh();
 
         assert_eq!(b.borrow().d, 0.9051482536448664);
@@ -41,22 +41,26 @@ mod tests {
 
     #[test]
     fn parents() {
-        let a = BVal::new(1.5);
+        let pool = BValPool::default();
+
+        let a = pool.pull(1.5);
         let b = a.tanh();
 
         assert!(a.borrow().parents.0.is_none());
         assert!(a.borrow().parents.1.is_none());
 
-        assert!(a.borrow().op == Op::None);
+        assert_eq!(a.borrow().op, Op::None);
 
         assert!(b.borrow().parents.0.is_some());
         assert!(b.borrow().parents.1.is_none());
-        assert!(b.borrow().op == Op::Tanh);
+        assert_eq!(b.borrow().op, Op::Tanh);
     }
 
     #[test]
     fn backward() {
-        let a = BVal::new(1.5);
+        let pool = BValPool::default();
+
+        let a = pool.pull(1.5);
         let b = a.tanh();
 
         b.borrow_mut().grad = 5.0;

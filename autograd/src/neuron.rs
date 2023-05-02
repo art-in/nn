@@ -1,4 +1,4 @@
-use crate::{utils::gen_rand_normal, val::BVal};
+use crate::{pool::BValPool, utils::gen_rand_normal, val::BVal};
 
 pub struct Neuron {
     pub weights: Vec<BVal>,
@@ -6,7 +6,7 @@ pub struct Neuron {
 }
 
 impl Neuron {
-    pub fn new(inputs_count: usize) -> Self {
+    pub fn new(inputs_count: usize, pool: &BValPool) -> Self {
         let mut weight_deviation: f64 = 0.15;
 
         // make initial weights lower when number of inputs goes up. big weights with lots of inputs
@@ -16,12 +16,12 @@ impl Neuron {
 
         let mut weights = Vec::new();
         weights.resize_with(inputs_count as usize, || {
-            BVal::new(gen_rand_normal(weight_deviation))
+            pool.pull(gen_rand_normal(weight_deviation))
         });
 
         Neuron {
             weights,
-            bias: BVal::new(gen_rand_normal(0.01)),
+            bias: pool.pull(gen_rand_normal(0.01)),
         }
     }
 
@@ -54,9 +54,10 @@ mod tests {
 
     #[test]
     fn forward() {
-        let n = Neuron::new(3);
+        let pool = BValPool::default();
+        let n = Neuron::new(3, &pool);
 
-        let out = n.forward(&vec![BVal::new(1.0), BVal::new(2.0), BVal::new(3.0)]);
+        let out = n.forward(&vec![pool.pull(1.0), pool.pull(2.0), pool.pull(3.0)]);
 
         assert!((out.borrow().d > -1.0) && (out.borrow().d < 1.0));
     }

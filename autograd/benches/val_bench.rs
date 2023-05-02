@@ -1,12 +1,14 @@
 use std::time::Duration;
 
-use autograd::val::BVal;
+use autograd::{pool::BValPool, val::BVal};
 use criterion::{criterion_group, criterion_main, Criterion};
 
 #[inline]
 fn val_forward() -> BVal {
-    let x1 = BVal::new(1.0);
-    let x2 = BVal::new(2.0);
+    let pool = BValPool::default();
+
+    let x1 = pool.pull(1.0);
+    let x2 = pool.pull(2.0);
 
     // all possible math operations
     let mul = &x1 * &x2;

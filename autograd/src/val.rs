@@ -8,7 +8,7 @@ use std::{
     rc::Rc,
 };
 
-use crate::ops::Op;
+use crate::{ops::Op, pool::BValPool};
 
 type BackwardFn = fn(&BVal) -> ();
 
@@ -21,7 +21,7 @@ pub struct Val {
 }
 
 impl Val {
-    fn new(d: f64) -> Self {
+    pub fn new(d: f64) -> Self {
         Val {
             d,
             parents: (None, None),
@@ -58,16 +58,16 @@ impl Ord for Val {
     }
 }
 
-#[derive(PartialEq, Clone)]
-pub struct BVal(pub Rc<RefCell<Val>>);
+#[derive(Clone)]
+pub struct BVal(pub Rc<RefCell<Val>>, BValPool);
 
 impl BVal {
-    pub fn new(d: f64) -> Self {
-        BVal(Rc::new(RefCell::new(Val::new(d))))
+    pub fn new(d: f64, pool: BValPool) -> Self {
+        Self::new_val(Val::new(d), pool)
     }
 
-    pub fn new_val(val: Val) -> Self {
-        BVal(Rc::new(RefCell::new(val)))
+    pub fn new_val(val: Val, pool: BValPool) -> Self {
+        BVal(Rc::new(RefCell::new(val)), pool)
     }
 
     pub fn backward(&self) {
@@ -96,6 +96,10 @@ impl BVal {
         for node in topo.iter().rev() {
             (node.borrow().backward)(&node);
         }
+    }
+
+    pub fn pool(&self) -> &BValPool {
+        &self.1
     }
 }
 
@@ -126,6 +130,12 @@ impl Display for BVal {
     }
 }
 
+impl PartialEq for BVal {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use float_cmp::assert_approx_eq;
@@ -135,11 +145,13 @@ mod tests {
     // https://youtu.be/VMj-3S1tku0?t=5877
     #[test]
     fn backward() {
-        let x1 = BVal::new(2.0);
-        let x2 = BVal::new(0.0);
-        let w1 = BVal::new(-3.0);
-        let w2 = BVal::new(1.0);
-        let b = BVal::new(6.8813735870195432);
+        let pool = BValPool::default();
+
+        let x1 = pool.pull(2.0);
+        let x2 = pool.pull(0.0);
+        let w1 = pool.pull(-3.0);
+        let w2 = pool.pull(1.0);
+        let b = pool.pull(6.8813735870195432);
 
         let x1w1 = &x1 * &w1;
         let x2w2 = &x2 * &w2;

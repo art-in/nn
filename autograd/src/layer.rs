@@ -1,13 +1,13 @@
-use crate::{neuron::Neuron, val::BVal};
+use crate::{neuron::Neuron, pool::BValPool, val::BVal};
 
 pub struct Layer {
     pub neurons: Vec<Neuron>,
 }
 
 impl Layer {
-    pub fn new(inputs_count: usize, outputs_count: usize) -> Self {
+    pub fn new(inputs_count: usize, outputs_count: usize, pool: &BValPool) -> Self {
         let mut neurons = Vec::new();
-        neurons.resize_with(outputs_count, || Neuron::new(inputs_count));
+        neurons.resize_with(outputs_count, || Neuron::new(inputs_count, pool));
 
         Layer { neurons }
     }
@@ -41,9 +41,11 @@ mod tests {
 
     #[test]
     fn forward() {
-        let l = Layer::new(3, 3);
+        let pool = BValPool::default();
+        let layer = Layer::new(3, 3, &pool);
 
-        let outputs = l.forward(vec![BVal::new(1.0), BVal::new(2.0), BVal::new(3.0)]);
+        let pool = BValPool::default();
+        let outputs = layer.forward(vec![pool.pull(1.0), pool.pull(2.0), pool.pull(3.0)]);
 
         for out in &outputs {
             assert!((out.borrow().d > -1.0) && (out.borrow().d < 1.0));

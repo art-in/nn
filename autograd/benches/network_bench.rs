@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use autograd::{network::Network, val::BVal};
+use autograd::network::Network;
 use criterion::{criterion_group, criterion_main, Criterion};
 
 #[inline]
@@ -15,16 +15,16 @@ fn classification() {
 
     let net = Network::new(vec![3, 4, 4, 1]);
 
-    let mut last_total_loss = BVal::new(0.0);
+    let mut last_total_loss = 0.0;
 
     for _ in 0..100 {
         // forward
-        let mut total_loss = BVal::new(0.0);
+        let mut total_loss = net.pool.pull(0.0);
         for (input, expected) in inputs.iter().zip(expecteds.iter()) {
             let output = &net.forward(input)[0];
             let loss = (*expected - output).pow(2.0);
             total_loss = &total_loss + &loss;
-            last_total_loss = total_loss.clone();
+            last_total_loss = total_loss.borrow().d;
         }
 
         // backward
@@ -40,7 +40,7 @@ fn classification() {
         }
     }
 
-    assert!(last_total_loss.borrow().d < 0.1);
+    assert!(last_total_loss < 0.1);
 }
 
 pub fn classification_benchmark(c: &mut Criterion) {
