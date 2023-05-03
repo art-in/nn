@@ -1,3 +1,5 @@
+use std::time::SystemTime;
+
 use autograd::{network::Network, val::BVal};
 
 use crate::{
@@ -9,12 +11,12 @@ use crate::{
 mod plot;
 mod utils;
 
+const EPOCHS: u32 = 1;
 const BATCHES: u32 = 6000;
 const BATCH_SIZE: u32 = 10;
-const BATCH_STEPS: u32 = 1;
 
 const LEARNING_RATE_START: f64 = 0.01;
-const LEARNING_RATE_END: f64 = 0.001;
+const LEARNING_RATE_END: f64 = 0.01;
 
 const PLOT_LOSSES_EACH_NTH_BATCH: u32 = 50;
 const SERIALIZE_MODEL_EACH_NTH_BATCH: u32 = 1000;
@@ -33,19 +35,21 @@ pub fn train(net: &mut Network, models_dir: &str, model_file_name_prefix: &str) 
     let mut losses = Vec::<f64>::new();
     let mut errors_percents = Vec::<f64>::new();
 
-    for batch_idx in 0..BATCHES {
-        // take next batch of images
-        let mut batch = Vec::<(Vec<f64>, u8)>::new();
+    for epoch_idx in 0..EPOCHS {
+        for batch_idx in 0..BATCHES {
+            let batch_start = SystemTime::now();
 
-        for _ in 0..BATCH_SIZE {
-            batch.push(
-                images_and_labels_it
-                    .next()
-                    .expect("failed to read next image"),
-            );
-        }
+            // take next batch of images
+            let mut batch = Vec::<(Vec<f64>, u8)>::new();
 
-        for step in 0..BATCH_STEPS {
+            for _ in 0..BATCH_SIZE {
+                batch.push(
+                    images_and_labels_it
+                        .next()
+                        .expect("failed to read next image"),
+                );
+            }
+
             // forward
             let mut batch_loss = BVal::new(0.0);
             let mut batch_errors = 0;
@@ -82,15 +86,6 @@ pub fn train(net: &mut Network, models_dir: &str, model_file_name_prefix: &str) 
             }
 
             // log / plot
-            println!(
-                "batch = {batch_idx}, \
-                step = {step}, \
-                learning_rate = {learning_rate}, \
-                batch_loss = {batch_loss}, \
-                batch_errors_percent = {}%",
-                batch_errors_percent * 100 as f64
-            );
-
             if (batch_idx + 1) % PLOT_LOSSES_EACH_NTH_BATCH == 0 {
                 plot_losses(&losses, &errors_percents);
             }
@@ -98,6 +93,20 @@ pub fn train(net: &mut Network, models_dir: &str, model_file_name_prefix: &str) 
             if (batch_idx + 1) % SERIALIZE_MODEL_EACH_NTH_BATCH == 0 {
                 net.serialize_to_file(models_dir, model_file_name_prefix);
             }
+
+            let batch_duration = SystemTime::now().duration_since(batch_start).unwrap();
+
+            println!(
+                "epoch = {epoch_idx}, \
+                batch = {batch_idx}, \
+                duration = {duration}ms, \
+                rate = {learning_rate:.4}, \
+                loss = {loss:.4}, \
+                errors = {errors_percent}%",
+                duration = batch_duration.as_millis(),
+                loss = batch_loss.borrow().d,
+                errors_percent = batch_errors_percent * 100 as f64
+            );
         }
     }
 }
