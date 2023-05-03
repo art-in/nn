@@ -80,7 +80,7 @@ pub fn train(net: &mut Network, models_dir: &str, model_file_name_prefix: &str) 
             let learning_rate = LEARNING_RATE_START
                 - (LEARNING_RATE_START - LEARNING_RATE_END) * batch_idx as f64 / BATCHES as f64;
 
-            for param in &net.parameters() {
+            for param in net.parameters() {
                 let grad = param.borrow().grad;
                 param.borrow_mut().d -= learning_rate * grad;
             }

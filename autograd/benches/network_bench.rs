@@ -34,7 +34,7 @@ fn classification() {
         total_loss.backward();
 
         // update
-        for param in &net.parameters() {
+        for param in net.parameters() {
             let grad = param.borrow().grad;
             param.borrow_mut().d -= 0.05 * grad;
         }

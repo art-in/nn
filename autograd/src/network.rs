@@ -7,6 +7,7 @@ use crate::{layer::Layer, utils, val::BVal};
 
 pub struct Network {
     pub layers: Vec<Layer>,
+    parameters: Vec<BVal>,
 }
 
 impl Network {
@@ -17,7 +18,14 @@ impl Network {
             layers.push(Layer::new(layers_sizes[i], layers_sizes[i + 1]))
         }
 
-        Network { layers }
+        let mut parameters = Vec::new();
+        for layer in &layers {
+            for param in layer.parameters() {
+                parameters.push(param);
+            }
+        }
+
+        Network { layers, parameters }
     }
 
     pub fn forward(&self, inputs: &Vec<f64>) -> Vec<BVal> {
@@ -30,20 +38,12 @@ impl Network {
         res
     }
 
-    pub fn parameters(&self) -> Vec<BVal> {
-        let mut res = Vec::new();
-
-        for layer in &self.layers {
-            for param in layer.parameters() {
-                res.push(param);
-            }
-        }
-
-        res
+    pub fn parameters(&self) -> &Vec<BVal> {
+        &self.parameters
     }
 
     pub fn reset_grad(&self) {
-        for param in &self.parameters() {
+        for param in self.parameters() {
             param.borrow_mut().grad = 0.0;
         }
     }
@@ -74,7 +74,7 @@ impl Network {
         }
 
         // write params
-        for param in &self.parameters() {
+        for param in self.parameters() {
             let d = param.borrow().d;
             utils::write_f64(&mut writer, d);
         }
@@ -105,7 +105,7 @@ impl Network {
         let net = Network::new(layers_sizes);
 
         // read params
-        for param in &net.parameters() {
+        for param in net.parameters() {
             let d = utils::read_f64(&mut reader);
             param.borrow_mut().d = d;
         }
@@ -183,7 +183,7 @@ mod tests {
             total_loss.backward();
 
             // update
-            for param in &net.parameters() {
+            for param in net.parameters() {
                 let grad = param.borrow().grad;
                 param.borrow_mut().d -= 0.05 * grad;
             }
