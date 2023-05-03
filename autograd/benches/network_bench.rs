@@ -13,7 +13,7 @@ fn classification() {
     ];
     let expecteds: Vec<f64> = vec![1.0, -1.0, -1.0, 1.0];
 
-    let net = Network::new(vec![3, 4, 4, 1]);
+    let mut net = Network::new(vec![3, 4, 4, 1]);
 
     let mut last_total_loss = 0.0;
 
@@ -24,19 +24,19 @@ fn classification() {
             let output = &net.forward(input)[0];
             let loss = (*expected - output).pow(2.0);
             total_loss = &total_loss + &loss;
-            last_total_loss = total_loss.borrow().d;
+            last_total_loss = total_loss.block().d;
         }
 
         // backward
         net.reset_grad();
 
-        total_loss.borrow_mut().grad = 1.0;
+        total_loss.block_mut().grad = 1.0;
         total_loss.backward();
 
         // update
         for param in net.parameters() {
-            let grad = param.borrow().grad;
-            param.borrow_mut().d -= 0.05 * grad;
+            let grad = param.block().grad;
+            param.block_mut().d -= 0.05 * grad;
         }
     }
 

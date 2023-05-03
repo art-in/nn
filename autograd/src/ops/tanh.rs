@@ -3,15 +3,15 @@ use crate::val::{BVal, Val};
 use super::Op;
 
 fn backward(child: &BVal) {
-    let child = child.borrow();
+    let child = child.block();
     let parent = child.parents.0.as_ref().unwrap();
 
-    parent.borrow_mut().grad += (1.0 - child.d.powf(2.0)) * child.grad;
+    parent.block_mut().grad += (1.0 - child.d.powf(2.0)) * child.grad;
 }
 
 impl BVal {
     pub fn tanh(&self) -> Self {
-        let e = std::f64::consts::E.powf(2.0 * self.borrow().d);
+        let e = std::f64::consts::E.powf(2.0 * self.block().d);
         let d = (e - 1.0) / (e + 1.0);
 
         BVal::new_val(Val {
@@ -35,8 +35,8 @@ mod tests {
         let a = BVal::new(1.5);
         let b = a.tanh();
 
-        assert_eq!(b.borrow().d, 0.9051482536448664);
-        assert_eq!(b.borrow().op, Op::Tanh);
+        assert_eq!(b.block().d, 0.9051482536448664);
+        assert_eq!(b.block().op, Op::Tanh);
     }
 
     #[test]
@@ -44,14 +44,14 @@ mod tests {
         let a = BVal::new(1.5);
         let b = a.tanh();
 
-        assert!(a.borrow().parents.0.is_none());
-        assert!(a.borrow().parents.1.is_none());
+        assert!(a.block().parents.0.is_none());
+        assert!(a.block().parents.1.is_none());
 
-        assert!(a.borrow().op == Op::None);
+        assert!(a.block().op == Op::None);
 
-        assert!(b.borrow().parents.0.is_some());
-        assert!(b.borrow().parents.1.is_none());
-        assert!(b.borrow().op == Op::Tanh);
+        assert!(b.block().parents.0.is_some());
+        assert!(b.block().parents.1.is_none());
+        assert!(b.block().op == Op::Tanh);
     }
 
     #[test]
@@ -59,10 +59,10 @@ mod tests {
         let a = BVal::new(1.5);
         let b = a.tanh();
 
-        b.borrow_mut().grad = 5.0;
+        b.block_mut().grad = 5.0;
         b.backward();
 
-        assert_eq!(a.borrow().grad, 0.9035331946182429);
-        assert_eq!(b.borrow().grad, 5.0);
+        assert_eq!(a.block().grad, 0.9035331946182429);
+        assert_eq!(b.block().grad, 5.0);
     }
 }

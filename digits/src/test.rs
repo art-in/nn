@@ -7,7 +7,7 @@ use crate::{
 };
 
 pub fn test(
-    net: &Network,
+    net: &mut Network,
     images_file_path: &str,
     labels_file_path: &str,
     failed_images_dir: &str,

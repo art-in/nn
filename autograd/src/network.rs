@@ -3,11 +3,14 @@ use std::{
     io::{BufReader, BufWriter},
 };
 
+use scoped_threadpool::Pool;
+
 use crate::{layer::Layer, utils, val::BVal};
 
 pub struct Network {
     pub layers: Vec<Layer>,
     parameters: Vec<BVal>,
+    threads: Pool,
 }
 
 impl Network {
@@ -25,14 +28,21 @@ impl Network {
             }
         }
 
-        Network { layers, parameters }
+        let cpus_num = std::thread::available_parallelism().unwrap().get();
+        let threads = Pool::new(cpus_num as u32);
+
+        Network {
+            layers,
+            parameters,
+            threads,
+        }
     }
 
-    pub fn forward(&self, inputs: &Vec<f64>) -> Vec<BVal> {
+    pub fn forward(&mut self, inputs: &Vec<f64>) -> Vec<BVal> {
         let mut res: Vec<BVal> = inputs.iter().map(|v| BVal::new(*v)).collect();
 
         for layer in &self.layers {
-            res = layer.forward(res);
+            res = layer.forward(res, &mut self.threads);
         }
 
         res
@@ -42,9 +52,9 @@ impl Network {
         &self.parameters
     }
 
-    pub fn reset_grad(&self) {
+    pub fn reset_grad(&mut self) {
         for param in self.parameters() {
-            param.borrow_mut().grad = 0.0;
+            param.block_mut().grad = 0.0;
         }
     }
 
@@ -75,7 +85,7 @@ impl Network {
 
         // write params
         for param in self.parameters() {
-            let d = param.borrow().d;
+            let d = param.block().d;
             utils::write_f64(&mut writer, d);
         }
     }
@@ -107,7 +117,7 @@ impl Network {
         // read params
         for param in net.parameters() {
             let d = utils::read_f64(&mut reader);
-            param.borrow_mut().d = d;
+            param.block_mut().d = d;
         }
 
         net
@@ -138,7 +148,7 @@ mod tests {
 
     #[test]
     fn forward() {
-        let net = Network::new(vec![3, 4, 2]);
+        let mut net = Network::new(vec![3, 4, 2]);
         let outputs = net.forward(&vec![1.0, 2.0, 3.0]);
 
         assert_eq!(outputs.len(), 2);
@@ -162,7 +172,7 @@ mod tests {
         ];
         let expecteds: Vec<f64> = vec![1.0, -1.0, -1.0, 1.0];
 
-        let net = Network::new(vec![3, 4, 4, 1]);
+        let mut net = Network::new(vec![3, 4, 4, 1]);
 
         let mut last_total_loss = BVal::new(0.0);
 
@@ -179,17 +189,17 @@ mod tests {
             // backward
             net.reset_grad();
 
-            total_loss.borrow_mut().grad = 1.0;
+            total_loss.block_mut().grad = 1.0;
             total_loss.backward();
 
             // update
             for param in net.parameters() {
-                let grad = param.borrow().grad;
-                param.borrow_mut().d -= 0.05 * grad;
+                let grad = param.block().grad;
+                param.block_mut().d -= 0.05 * grad;
             }
         }
 
-        assert!(last_total_loss.borrow().d < 0.1);
+        assert!(last_total_loss.block().d < 0.1);
     }
 
     #[test]
@@ -220,9 +230,9 @@ mod tests {
         let params_it = params1.iter().zip(params2.iter());
 
         for (param1, param2) in params_it {
-            assert_eq!(param1.borrow().d, param2.borrow().d);
-            assert_eq!(param1.borrow().op, param2.borrow().op);
-            assert_eq!(param1.borrow().grad, param2.borrow().grad);
+            assert_eq!(param1.block().d, param2.block().d);
+            assert_eq!(param1.block().op, param2.block().op);
+            assert_eq!(param1.block().grad, param2.block().grad);
         }
     }
 }

@@ -1,3 +1,7 @@
+use std::sync::Mutex;
+
+use scoped_threadpool::Pool;
+
 use crate::{neuron::Neuron, val::BVal};
 
 pub struct Layer {
@@ -12,14 +16,19 @@ impl Layer {
         Layer { neurons }
     }
 
-    pub fn forward(&self, inputs: Vec<BVal>) -> Vec<BVal> {
-        let mut outputs = Vec::new();
+    pub fn forward(&self, inputs: Vec<BVal>, pool: &mut Pool) -> Vec<BVal> {
+        let outputs = Mutex::new(Vec::new());
 
-        for n in &self.neurons {
-            outputs.push(n.forward(&inputs))
-        }
+        pool.scoped(|scoped| {
+            for n in &self.neurons {
+                scoped.execute(|| {
+                    let output = n.forward(&inputs);
+                    outputs.lock().unwrap().push(output);
+                });
+            }
+        });
 
-        outputs
+        outputs.into_inner().unwrap()
     }
 
     pub fn parameters(&self) -> Vec<BVal> {
@@ -41,12 +50,16 @@ mod tests {
 
     #[test]
     fn forward() {
+        let mut threads = Pool::new(1);
         let l = Layer::new(3, 3);
 
-        let outputs = l.forward(vec![BVal::new(1.0), BVal::new(2.0), BVal::new(3.0)]);
+        let outputs = l.forward(
+            vec![BVal::new(1.0), BVal::new(2.0), BVal::new(3.0)],
+            &mut threads,
+        );
 
         for out in &outputs {
-            assert!((out.borrow().d > -1.0) && (out.borrow().d < 1.0));
+            assert!((out.block().d > -1.0) && (out.block().d < 1.0));
         }
     }
 }

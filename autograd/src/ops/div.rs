@@ -28,6 +28,8 @@ impl Div<&BVal> for f64 {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
     use crate::ops::Op;
 
     use super::*;
@@ -47,7 +49,7 @@ mod tests {
         let d = &c / &a;
 
         assert!(d == BVal::new(0.5));
-        assert!(d.borrow().op == Op::Mul);
+        assert!(d.block().op == Op::Mul);
     }
 
     #[test]
@@ -56,19 +58,19 @@ mod tests {
         let b = BVal::new(2.0);
         let c = &a / &b;
 
-        assert!(a.borrow().parents.0.is_none());
-        assert!(a.borrow().parents.1.is_none());
+        assert!(a.block().parents.0.is_none());
+        assert!(a.block().parents.1.is_none());
 
-        assert!(b.borrow().parents.0.is_none());
-        assert!(b.borrow().parents.1.is_none());
+        assert!(b.block().parents.0.is_none());
+        assert!(b.block().parents.1.is_none());
 
-        assert!(a.borrow().op == Op::None);
-        assert!(b.borrow().op == Op::None);
+        assert!(a.block().op == Op::None);
+        assert!(b.block().op == Op::None);
 
-        assert!(c.borrow().parents.0.as_ref().unwrap() == &a);
-        assert!(c.borrow().parents.1.as_ref().unwrap() == &BVal::new(0.5));
+        assert!(c.block().parents.0.as_ref().unwrap() == &a);
+        assert!(c.block().parents.1.as_ref().unwrap() == &BVal::new(0.5));
 
-        assert!(c.borrow().op == Op::Mul);
+        assert!(c.block().op == Op::Mul);
     }
 
     #[test]
@@ -78,26 +80,32 @@ mod tests {
         let c = &a / &b;
         let d = &c / &a;
 
-        assert!(a.borrow().parents.0.is_none());
-        assert!(a.borrow().parents.1.is_none());
+        assert!(a.block().parents.0.is_none());
+        assert!(a.block().parents.1.is_none());
 
-        assert!(b.borrow().parents.0.is_none());
-        assert!(b.borrow().parents.1.is_none());
+        assert!(b.block().parents.0.is_none());
+        assert!(b.block().parents.1.is_none());
 
-        assert!(a.borrow().op == Op::None);
-        assert!(b.borrow().op == Op::None);
+        assert!(a.block().op == Op::None);
+        assert!(b.block().op == Op::None);
 
-        assert!(c.borrow().parents.0.is_some());
-        assert!(c.borrow().parents.1.is_some());
-        assert!(c.borrow().parents.0.as_ref().unwrap().as_ptr() == a.as_ptr());
+        assert!(c.block().parents.0.is_some());
+        assert!(c.block().parents.1.is_some());
+        assert_eq!(
+            Arc::as_ptr(c.block().parents.0.as_ref().unwrap()),
+            Arc::as_ptr(&a)
+        );
 
-        assert!(c.borrow().op == Op::Mul);
+        assert!(c.block().op == Op::Mul);
 
-        assert!(d.borrow().parents.0.is_some());
-        assert!(d.borrow().parents.1.is_some());
-        assert!(d.borrow().parents.0.as_ref().unwrap().as_ptr() == c.as_ptr());
+        assert!(d.block().parents.0.is_some());
+        assert!(d.block().parents.1.is_some());
+        assert_eq!(
+            Arc::as_ptr(d.block().parents.0.as_ref().unwrap()),
+            Arc::as_ptr(&c)
+        );
 
-        assert!(d.borrow().op == Op::Mul);
+        assert!(d.block().op == Op::Mul);
     }
 
     #[test]
@@ -106,11 +114,11 @@ mod tests {
         let b = BVal::new(2.0);
         let c = &a / &b;
 
-        c.borrow_mut().grad = 5.0;
+        c.block_mut().grad = 5.0;
         c.backward();
 
-        assert_eq!(a.borrow().grad, 2.5);
-        assert_eq!(b.borrow().grad, -3.75);
-        assert_eq!(c.borrow().grad, 5.0);
+        assert_eq!(a.block().grad, 2.5);
+        assert_eq!(b.block().grad, -3.75);
+        assert_eq!(c.block().grad, 5.0);
     }
 }

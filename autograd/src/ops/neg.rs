@@ -12,6 +12,8 @@ impl Neg for &BVal {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
     use crate::ops::Op;
 
     use super::*;
@@ -22,7 +24,7 @@ mod tests {
         let b = -&a;
 
         assert!(b == BVal::new(-1.5));
-        assert_eq!(b.borrow().op, Op::Mul);
+        assert_eq!(b.block().op, Op::Mul);
     }
 
     #[test]
@@ -30,15 +32,18 @@ mod tests {
         let a = BVal::new(1.5);
         let b = -&a;
 
-        assert!(a.borrow().parents.0.is_none());
-        assert!(a.borrow().parents.1.is_none());
-        assert!(a.borrow().op == Op::None);
+        assert!(a.block().parents.0.is_none());
+        assert!(a.block().parents.1.is_none());
+        assert!(a.block().op == Op::None);
 
-        assert!(b.borrow().parents.0.as_ref().unwrap() == &a);
-        assert!(b.borrow().parents.0.as_ref().unwrap().as_ptr() == a.as_ptr());
-        assert!(b.borrow().parents.1.as_ref().unwrap() == &BVal::new(-1.0));
+        assert!(b.block().parents.0.as_ref().unwrap() == &a);
+        assert_eq!(
+            Arc::as_ptr(b.block().parents.0.as_ref().unwrap()),
+            Arc::as_ptr(&a)
+        );
+        assert!(b.block().parents.1.as_ref().unwrap() == &BVal::new(-1.0));
 
-        assert!(b.borrow().op == Op::Mul);
+        assert!(b.block().op == Op::Mul);
     }
 
     #[test]
@@ -46,10 +51,10 @@ mod tests {
         let a = BVal::new(1.5);
         let b = -&a;
 
-        b.borrow_mut().grad = 5.0;
+        b.block_mut().grad = 5.0;
         b.backward();
 
-        assert!(a.borrow().grad == -5.0);
-        assert!(b.borrow().grad == 5.0);
+        assert!(a.block().grad == -5.0);
+        assert!(b.block().grad == 5.0);
     }
 }

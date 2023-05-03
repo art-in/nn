@@ -71,12 +71,12 @@ pub fn train(
 
             let batch_errors_percent = batch_errors as f64 / batch.len() as f64;
 
-            losses.push(batch_loss.borrow().d);
+            losses.push(batch_loss.block().d);
             errors_percents.push(batch_errors_percent);
 
             // backward
             net.reset_grad();
-            batch_loss.borrow_mut().grad = 1.0;
+            batch_loss.block_mut().grad = 1.0;
             batch_loss.backward();
 
             // update
@@ -84,8 +84,8 @@ pub fn train(
                 - (learning_rate.0 - learning_rate.1) * batch_idx as f64 / batches as f64;
 
             for param in net.parameters() {
-                let grad = param.borrow().grad;
-                param.borrow_mut().d -= learning_rate * grad;
+                let mut param = param.block_mut();
+                param.d -= learning_rate * param.grad;
             }
 
             // log / plot
@@ -113,7 +113,7 @@ pub fn train(
                 loss = {loss:.4}, \
                 errors = {errors_percent}%",
                 duration = batch_duration.as_millis(),
-                loss = batch_loss.borrow().d,
+                loss = batch_loss.block().d,
                 errors_percent = batch_errors_percent * 100 as f64
             );
         }

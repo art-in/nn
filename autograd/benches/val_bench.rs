@@ -17,7 +17,7 @@ fn val_forward() -> BVal {
     let sub = &pow - &neg;
     let tanh = sub.tanh();
 
-    assert_eq!(tanh.borrow().d, 0.9520794848173941);
+    assert_eq!(tanh.block().d, 0.9520794848173941);
 
     tanh
 }

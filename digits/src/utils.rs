@@ -7,7 +7,7 @@ pub fn predict(output: &Vec<BVal>) -> u8 {
     let mut max_label: u8 = 10;
 
     for (label, out) in output.iter().enumerate() {
-        let out = out.borrow().d;
+        let out = out.block().d;
         if out > max_out {
             max_out = out;
             max_label = label as u8;

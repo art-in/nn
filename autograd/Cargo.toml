@@ -18,3 +18,4 @@ criterion = "0.4.0"
 [dependencies]
 rand = "0.8.5"
 rand_distr = "0.4.3"
+scoped_threadpool = "0.1.9"

@@ -57,7 +57,8 @@ mod tests {
         let n = Neuron::new(3);
 
         let out = n.forward(&vec![BVal::new(1.0), BVal::new(2.0), BVal::new(3.0)]);
+        let out = out.block();
 
-        assert!((out.borrow().d > -1.0) && (out.borrow().d < 1.0));
+        assert!((out.d > -1.0) && (out.d < 1.0));
     }
 }

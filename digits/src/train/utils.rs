@@ -66,7 +66,7 @@ mod tests {
 
         let res = calc_prediction_loss(&actual, &expected);
 
-        assert_eq!(res.borrow().d, 0.0);
+        assert_eq!(res.block().d, 0.0);
     }
 
     #[test]
@@ -88,15 +88,15 @@ mod tests {
 
         let res = calc_prediction_loss(&actual, &expected);
 
-        assert_eq!(res.borrow().d, 6.0);
+        assert_eq!(res.block().d, 6.0);
 
-        res.borrow_mut().grad = 1.0;
+        res.block_mut().grad = 1.0;
         res.backward();
 
-        assert_eq!(actual[0].borrow().grad, 4.0);
-        assert_eq!(actual[1].borrow().grad, -2.0);
-        assert_eq!(actual[2].borrow().grad, 0.0);
-        assert_eq!(actual[9].borrow().grad, -2.0);
+        assert_eq!(actual[0].block().grad, 4.0);
+        assert_eq!(actual[1].block().grad, -2.0);
+        assert_eq!(actual[2].block().grad, 0.0);
+        assert_eq!(actual[9].block().grad, -2.0);
     }
 
     #[test]
@@ -118,6 +118,6 @@ mod tests {
 
         let res = calc_prediction_loss(&actual, &expected);
 
-        assert_eq!(res.borrow().d, 13.0);
+        assert_eq!(res.block().d, 13.0);
     }
 }

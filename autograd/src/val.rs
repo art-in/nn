@@ -1,11 +1,10 @@
 use core::fmt;
 use std::{
-    cell::RefCell,
     cmp::Ordering,
     collections::HashSet,
     fmt::{Debug, Display},
     ops::Deref,
-    rc::Rc,
+    sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard},
 };
 
 use crate::ops::Op;
@@ -58,27 +57,36 @@ impl Ord for Val {
     }
 }
 
-#[derive(PartialEq, Clone)]
-pub struct BVal(pub Rc<RefCell<Val>>);
+#[derive(Clone)]
+pub struct BVal(pub Arc<RwLock<Val>>);
 
 impl BVal {
+    pub fn block(&self) -> RwLockReadGuard<'_, Val> {
+        self.read().unwrap()
+    }
+
+    pub fn block_mut(&self) -> RwLockWriteGuard<'_, Val> {
+        self.write().unwrap()
+    }
+
     pub fn new(d: f64) -> Self {
-        BVal(Rc::new(RefCell::new(Val::new(d))))
+        Self::new_val(Val::new(d))
     }
 
     pub fn new_val(val: Val) -> Self {
-        BVal(Rc::new(RefCell::new(val)))
+        BVal(Arc::new(RwLock::new(val)))
     }
 
     pub fn backward(&self) {
         let mut topo: Vec<BVal> = Vec::new();
-        let mut visited: HashSet<*mut Val> = HashSet::new();
+        let mut visited: HashSet<*const RwLock<Val>> = HashSet::new();
 
-        fn build_topo(node: BVal, visited: &mut HashSet<*mut Val>, topo: &mut Vec<BVal>) {
-            if !visited.contains(&node.as_ptr()) {
-                visited.insert(node.as_ptr());
+        fn build_topo(node: BVal, visited: &mut HashSet<*const RwLock<Val>>, topo: &mut Vec<BVal>) {
+            let node_ptr = Arc::as_ptr(node.deref());
+            if !visited.contains(&node_ptr) {
+                visited.insert(node_ptr);
 
-                let node_ref = node.borrow();
+                let node_ref = node.block();
                 let parents = [node_ref.parents.0.as_ref(), node_ref.parents.1.as_ref()];
 
                 for parent in parents {
@@ -94,13 +102,14 @@ impl BVal {
         build_topo(self.clone(), &mut visited, &mut topo);
 
         for node in topo.iter().rev() {
-            (node.borrow().backward)(&node);
+            let backward = node.block().backward;
+            (backward)(&node);
         }
     }
 }
 
 impl Deref for BVal {
-    type Target = Rc<RefCell<Val>>;
+    type Target = Arc<RwLock<Val>>;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -109,20 +118,26 @@ impl Deref for BVal {
 
 impl Debug for BVal {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        // implementing manually to omit func field "backward"
+        // implementing manually to omit function field "backward"
+        let val = self.block();
         f.debug_struct("")
-            .field("d", &self.borrow().d)
-            .field("grad", &self.borrow().grad)
-            .field("op", &self.borrow().op)
-            .field("parents", &self.borrow().parents)
+            .field("d", &val.d)
+            .field("grad", &val.grad)
+            .field("op", &val.op)
+            .field("parents", &val.parents)
             .finish()
     }
 }
 
 impl Display for BVal {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let tmp = self.0.as_ref().borrow();
-        write!(f, "{}", tmp.d)
+        write!(f, "{}", self.block().d)
+    }
+}
+
+impl PartialEq for BVal {
+    fn eq(&self, other: &Self) -> bool {
+        (Arc::as_ptr(self) == Arc::as_ptr(other)) || (self.block().d == other.block().d)
     }
 }
 
@@ -147,14 +162,14 @@ mod tests {
         let n = &x1w1x2w2 + &b;
         let o = n.tanh();
 
-        assert_eq!(o.borrow().d, 0.7071067811865476);
+        assert_eq!(o.block().d, 0.7071067811865476);
 
-        o.borrow_mut().grad = 1.0;
+        o.block_mut().grad = 1.0;
         o.backward();
 
-        assert_approx_eq!(f64, x1.borrow().grad, -1.5);
-        assert_approx_eq!(f64, x2.borrow().grad, 0.5);
-        assert_approx_eq!(f64, w1.borrow().grad, 1.0);
-        assert_approx_eq!(f64, w2.borrow().grad, 0.0);
+        assert_approx_eq!(f64, x1.block().grad, -1.5);
+        assert_approx_eq!(f64, x2.block().grad, 0.5);
+        assert_approx_eq!(f64, w1.block().grad, 1.0);
+        assert_approx_eq!(f64, w2.block().grad, 0.0);
     }
 }

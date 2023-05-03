@@ -41,7 +41,7 @@ fn main() {
     );
 
     test(
-        &net,
+        &mut net,
         TEST_IMAGES_FILE_PATH,
         TEST_LABELS_FILE_PATH,
         FAILED_IMAGES_DIR,
