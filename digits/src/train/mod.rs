@@ -4,29 +4,32 @@ use autograd::{network::Network, val::BVal};
 
 use crate::{
     mnist::{images_it::ImagesIt, labels_it::LabelsIt},
-    training::plot::plot_losses,
+    train::plot::plot_losses,
     utils::predict,
 };
 
 mod plot;
 mod utils;
 
-const EPOCHS: u32 = 1;
-const BATCHES: u32 = 6000;
-const BATCH_SIZE: u32 = 10;
-
-const LEARNING_RATE_START: f64 = 0.01;
-const LEARNING_RATE_END: f64 = 0.01;
-
-const PLOT_LOSSES_EACH_NTH_BATCH: u32 = 50;
-const SERIALIZE_MODEL_EACH_NTH_BATCH: u32 = 1000;
-
-pub fn train(net: &mut Network, models_dir: &str, model_file_name_prefix: &str) {
-    let images_it = ImagesIt::new("digits/data/train-images-idx3-ubyte");
-    let labels_it = LabelsIt::new("digits/data/train-labels-idx1-ubyte");
+pub fn train(
+    net: &mut Network,
+    images_file_path: &str,
+    labels_file_path: &str,
+    models_dir: &str,
+    model_file_name_prefix: &str,
+    plots_dir: &str,
+    epochs: u32,
+    batches: u32,
+    batch_size: u32,
+    learning_rate: (f64, f64),
+    plot_losses_each_nth_batch: Option<u32>,
+    serialize_model_each_nth_batch: Option<u32>,
+) {
+    let images_it = ImagesIt::new(images_file_path);
+    let labels_it = LabelsIt::new(labels_file_path);
 
     assert!(
-        BATCHES * BATCH_SIZE <= images_it.images_count(),
+        batches * batch_size <= images_it.images_count(),
         "not enough images in input stream"
     );
 
@@ -35,14 +38,14 @@ pub fn train(net: &mut Network, models_dir: &str, model_file_name_prefix: &str) 
     let mut losses = Vec::<f64>::new();
     let mut errors_percents = Vec::<f64>::new();
 
-    for epoch_idx in 0..EPOCHS {
-        for batch_idx in 0..BATCHES {
+    for epoch_idx in 0..epochs {
+        for batch_idx in 0..batches {
             let batch_start = SystemTime::now();
 
             // take next batch of images
             let mut batch = Vec::<(Vec<f64>, u8)>::new();
 
-            for _ in 0..BATCH_SIZE {
+            for _ in 0..batch_size {
                 batch.push(
                     images_and_labels_it
                         .next()
@@ -77,8 +80,8 @@ pub fn train(net: &mut Network, models_dir: &str, model_file_name_prefix: &str) 
             batch_loss.backward();
 
             // update
-            let learning_rate = LEARNING_RATE_START
-                - (LEARNING_RATE_START - LEARNING_RATE_END) * batch_idx as f64 / BATCHES as f64;
+            let learning_rate = learning_rate.0
+                - (learning_rate.0 - learning_rate.1) * batch_idx as f64 / batches as f64;
 
             for param in net.parameters() {
                 let grad = param.borrow().grad;
@@ -86,11 +89,17 @@ pub fn train(net: &mut Network, models_dir: &str, model_file_name_prefix: &str) 
             }
 
             // log / plot
-            if (batch_idx + 1) % PLOT_LOSSES_EACH_NTH_BATCH == 0 {
-                plot_losses(&losses, &errors_percents);
+            if plot_losses_each_nth_batch.is_some()
+                && batch_idx > 0
+                && batch_idx % plot_losses_each_nth_batch.unwrap() == 0
+            {
+                plot_losses(&losses, &errors_percents, plots_dir);
             }
 
-            if (batch_idx + 1) % SERIALIZE_MODEL_EACH_NTH_BATCH == 0 {
+            if serialize_model_each_nth_batch.is_some()
+                && batch_idx > 0
+                && batch_idx % serialize_model_each_nth_batch.unwrap() == 0
+            {
                 net.serialize_to_file(models_dir, model_file_name_prefix);
             }
 
@@ -107,6 +116,14 @@ pub fn train(net: &mut Network, models_dir: &str, model_file_name_prefix: &str) 
                 loss = batch_loss.borrow().d,
                 errors_percent = batch_errors_percent * 100 as f64
             );
+        }
+
+        if plot_losses_each_nth_batch.is_some() {
+            plot_losses(&losses, &errors_percents, plots_dir);
+        }
+
+        if serialize_model_each_nth_batch.is_some() {
+            net.serialize_to_file(models_dir, model_file_name_prefix);
         }
     }
 }

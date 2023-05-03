@@ -384,12 +384,21 @@ dependencies = [
 ]
 
 [[package]]
-name = "digits_recognition"
+name = "digits"
 version = "0.1.0"
 dependencies = [
  "autograd",
+ "criterion",
  "image",
  "plotters",
+]
+
+[[package]]
+name = "digits_runner"
+version = "0.1.0"
+dependencies = [
+ "autograd",
+ "digits",
 ]
 
 [[package]]

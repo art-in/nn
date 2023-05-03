@@ -6,9 +6,15 @@ use crate::{
     utils::predict,
 };
 
-pub fn test(net: &Network, save_failed_images: bool) {
-    let images_it = ImagesIt::new("digits/data/t10k-images-idx3-ubyte");
-    let labels_it = LabelsIt::new("digits/data/t10k-labels-idx1-ubyte");
+pub fn test(
+    net: &Network,
+    images_file_path: &str,
+    labels_file_path: &str,
+    failed_images_dir: &str,
+    save_failed_images: bool,
+) {
+    let images_it = ImagesIt::new(images_file_path);
+    let labels_it = LabelsIt::new(labels_file_path);
 
     let image_width = images_it.image_width();
     let image_height = images_it.image_height();
@@ -29,7 +35,7 @@ pub fn test(net: &Network, save_failed_images: bool) {
         if is_error && save_failed_images {
             let image = create_image(&image, image_width, image_height);
             image
-                .save(format!("digits/images/error-{idx}-{label}.png"))
+                .save(format!("{failed_images_dir}/error-{idx}-{label}.png"))
                 .expect("failed to save image");
         }
     }

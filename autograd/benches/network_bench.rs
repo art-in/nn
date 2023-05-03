@@ -15,7 +15,7 @@ fn classification() {
 
     let net = Network::new(vec![3, 4, 4, 1]);
 
-    let mut last_total_loss = BVal::new(0.0);
+    let mut last_total_loss = 0.0;
 
     for _ in 0..100 {
         // forward
@@ -24,7 +24,7 @@ fn classification() {
             let output = &net.forward(input)[0];
             let loss = (*expected - output).pow(2.0);
             total_loss = &total_loss + &loss;
-            last_total_loss = total_loss.clone();
+            last_total_loss = total_loss.borrow().d;
         }
 
         // backward
@@ -40,7 +40,7 @@ fn classification() {
         }
     }
 
-    assert!(last_total_loss.borrow().d < 0.1);
+    assert!(last_total_loss < 0.1);
 }
 
 pub fn classification_benchmark(c: &mut Criterion) {
