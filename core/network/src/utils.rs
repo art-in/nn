@@ -33,7 +33,7 @@ pub fn read_f64<T: Read>(reader: &mut T) -> f64 {
     f64::from_ne_bytes(buf)
 }
 
-fn get_model_file_name(prefix: &str, layers_sizes: &Vec<usize>) -> String {
+fn get_model_file_name(prefix: &str, layers_sizes: &[usize]) -> String {
     let mut res = layers_sizes.iter().fold(prefix.to_string(), |mut res, sz| {
         res += "-";
         res += &sz.to_string();
@@ -44,10 +44,10 @@ fn get_model_file_name(prefix: &str, layers_sizes: &Vec<usize>) -> String {
     res
 }
 
-pub fn get_model_file_path(dir: &str, file_name_prefix: &str, layers_sizes: &Vec<usize>) -> String {
+pub fn get_model_file_path(dir: &str, file_name_prefix: &str, layers_sizes: &[usize]) -> String {
     String::from(
         Path::new(dir)
-            .join(get_model_file_name(file_name_prefix, &layers_sizes))
+            .join(get_model_file_name(file_name_prefix, layers_sizes))
             .to_str()
             .unwrap(),
     )

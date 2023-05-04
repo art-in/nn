@@ -81,10 +81,8 @@ impl BVal {
                 let node_ref = node.borrow();
                 let parents = [node_ref.parents.0.as_ref(), node_ref.parents.1.as_ref()];
 
-                for parent in parents {
-                    if let Some(parent) = parent {
-                        build_topo(parent.clone(), visited, topo);
-                    }
+                for parent in parents.into_iter().flatten() {
+                    build_topo(parent.clone(), visited, topo);
                 }
 
                 topo.push(node.clone());
@@ -94,7 +92,7 @@ impl BVal {
         build_topo(self.clone(), &mut visited, &mut topo);
 
         for node in topo.iter().rev() {
-            (node.borrow().backward)(&node);
+            (node.borrow().backward)(node);
         }
     }
 }

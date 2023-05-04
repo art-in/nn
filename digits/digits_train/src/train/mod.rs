@@ -12,6 +12,7 @@ use crate::{
 mod plot;
 mod utils;
 
+#[allow(clippy::too_many_arguments)]
 pub fn train(
     net: &mut Network,
     images_file_path: &str,
@@ -59,7 +60,7 @@ pub fn train(
             let mut batch_errors = 0;
 
             for (image, label) in &batch {
-                let output = net.forward(&image);
+                let output = net.forward(image);
                 let expected = utils::label_to_outputs(*label);
 
                 let loss = utils::calc_prediction_loss(&output, &expected);
@@ -115,7 +116,7 @@ pub fn train(
                 errors = {errors_percent}%",
                 duration = batch_duration.as_millis(),
                 loss = batch_loss.borrow().d,
-                errors_percent = batch_errors_percent * 100 as f64
+                errors_percent = batch_errors_percent * 100.0
             );
         }
 

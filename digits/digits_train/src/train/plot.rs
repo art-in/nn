@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use plotters::prelude::*;
 
-pub fn plot_losses(losses: &Vec<f64>, errors_percents: &Vec<f64>, dir: &str) {
+pub fn plot_losses(losses: &Vec<f64>, errors_percents: &[f64], dir: &str) {
     let path = PathBuf::from(dir).join("losses.bmp").as_path().to_owned();
 
     let root = BitMapBackend::new(&path, (1280, 480)).into_drawing_area();

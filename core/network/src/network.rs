@@ -30,7 +30,7 @@ impl Network {
         Network { layers, parameters }
     }
 
-    pub fn forward(&self, inputs: &Vec<f64>) -> Vec<BVal> {
+    pub fn forward(&self, inputs: &[f64]) -> Vec<BVal> {
         let mut res: Vec<BVal> = inputs.iter().map(|v| BVal::new(*v)).collect();
 
         for layer in &self.layers {

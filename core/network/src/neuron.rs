@@ -17,7 +17,7 @@ impl Neuron {
         weight_deviation = weight_deviation.min(1.0 / (inputs_count as f64).sqrt());
 
         let mut weights = Vec::new();
-        weights.resize_with(inputs_count as usize, || {
+        weights.resize_with(inputs_count, || {
             BVal::new(gen_rand_normal(weight_deviation))
         });
 
