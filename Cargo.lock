@@ -382,7 +382,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "digits"
+name = "digits_train"
 version = "0.1.0"
 dependencies = [
  "autograd",
@@ -393,11 +393,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "digits_runner"
+name = "digits_train_runner"
 version = "0.1.0"
 dependencies = [
  "autograd",
- "digits",
+ "digits_train",
  "network",
 ]
 

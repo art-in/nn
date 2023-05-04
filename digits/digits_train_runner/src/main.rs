@@ -1,10 +1,10 @@
-use digits::{test::test, train::train};
+use digits_train::{test::test, train::train};
 use network::network::Network;
 
-const TRAIN_IMAGES_FILE_PATH: &str = "digits/data/train-images-idx3-ubyte";
-const TRAIN_LABELS_FILE_PATH: &str = "digits/data/train-labels-idx1-ubyte";
-const TEST_IMAGES_FILE_PATH: &str = "digits/data/t10k-images-idx3-ubyte";
-const TEST_LABELS_FILE_PATH: &str = "digits/data/t10k-labels-idx1-ubyte";
+const TRAIN_IMAGES_FILE_PATH: &str = "digits/digits_train/data/train-images-idx3-ubyte";
+const TRAIN_LABELS_FILE_PATH: &str = "digits/digits_train/data/train-labels-idx1-ubyte";
+const TEST_IMAGES_FILE_PATH: &str = "digits/digits_train/data/t10k-images-idx3-ubyte";
+const TEST_LABELS_FILE_PATH: &str = "digits/digits_train/data/t10k-labels-idx1-ubyte";
 
 const MODEL_FILE_NAME_PREFIX: &str = "digits";
 const MODELS_DIR: &str = "digits_runner/models";

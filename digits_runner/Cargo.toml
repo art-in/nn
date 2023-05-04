@@ -1,9 +1,0 @@
-[package]
-name = "digits_runner"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-autograd = { path = "../autograd" }
-network = { path = "../network" }
-digits = { path = "../digits" }

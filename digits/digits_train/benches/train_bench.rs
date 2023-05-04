@@ -1,11 +1,11 @@
 use std::time::Duration;
 
 use criterion::{criterion_group, criterion_main, Criterion};
-use digits::train::train;
+use digits_train::train::train;
 use network::network::Network;
 
-const TRAIN_IMAGES_FILE_PATH: &str = "../digits/data/train-images-idx3-ubyte";
-const TRAIN_LABELS_FILE_PATH: &str = "../digits/data/train-labels-idx1-ubyte";
+const TRAIN_IMAGES_FILE_PATH: &str = "../digits_train/data/train-images-idx3-ubyte";
+const TRAIN_LABELS_FILE_PATH: &str = "../digits_train/data/train-labels-idx1-ubyte";
 
 pub fn train_benchmark(c: &mut Criterion) {
     let mut net = Network::new(vec![784, 200, 80, 10]);
