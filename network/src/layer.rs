@@ -1,4 +1,6 @@
-use crate::{neuron::Neuron, val::BVal};
+use autograd::val::BVal;
+
+use crate::neuron::Neuron;
 
 pub struct Layer {
     pub neurons: Vec<Neuron>,

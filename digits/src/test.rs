@@ -1,4 +1,4 @@
-use autograd::network::Network;
+use network::network::Network;
 
 use crate::{
     image::create_image,

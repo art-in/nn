@@ -1,10 +1,10 @@
 [package]
-name = "digits"
+name = "network"
 version = "0.1.0"
 edition = "2021"
 
 [[bench]]
-name = "train_bench"
+name = "network_bench"
 harness = false
 
 [dev-dependencies]
@@ -12,6 +12,5 @@ criterion = "0.4.0"
 
 [dependencies]
 autograd = { path = "../autograd" }
-network = { path = "../network" }
-plotters = "0.3.4"
-image = "0.24.6"
+rand = "0.8.5"
+rand_distr = "0.4.3"

@@ -1,7 +1,8 @@
 use std::time::Duration;
 
-use autograd::{network::Network, val::BVal};
+use autograd::val::BVal;
 use criterion::{criterion_group, criterion_main, Criterion};
+use network::network::Network;
 
 #[inline]
 fn classification() {

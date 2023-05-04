@@ -1,5 +1,5 @@
-use autograd::network::Network;
 use digits::{test::test, train::train};
+use network::network::Network;
 
 const TRAIN_IMAGES_FILE_PATH: &str = "digits/data/train-images-idx3-ubyte";
 const TRAIN_LABELS_FILE_PATH: &str = "digits/data/train-labels-idx1-ubyte";

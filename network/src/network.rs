@@ -3,7 +3,9 @@ use std::{
     io::{BufReader, BufWriter},
 };
 
-use crate::{layer::Layer, utils, val::BVal};
+use autograd::val::BVal;
+
+use crate::{layer::Layer, utils};
 
 pub struct Network {
     pub layers: Vec<Layer>,

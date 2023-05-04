@@ -1,8 +1,8 @@
 use std::time::Duration;
 
-use autograd::network::Network;
 use criterion::{criterion_group, criterion_main, Criterion};
 use digits::train::train;
+use network::network::Network;
 
 const TRAIN_IMAGES_FILE_PATH: &str = "../digits/data/train-images-idx3-ubyte";
 const TRAIN_LABELS_FILE_PATH: &str = "../digits/data/train-labels-idx1-ubyte";

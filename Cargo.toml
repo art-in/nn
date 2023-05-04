@@ -1,2 +1,2 @@
 [workspace]
-members = ["autograd", "digits", "digits_runner"]
+members = ["autograd", "network", "digits", "digits_runner"]

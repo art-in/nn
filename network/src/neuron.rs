@@ -1,4 +1,6 @@
-use crate::{utils::gen_rand_normal, val::BVal};
+use autograd::val::BVal;
+
+use crate::utils::gen_rand_normal;
 
 pub struct Neuron {
     pub weights: Vec<BVal>,

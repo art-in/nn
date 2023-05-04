@@ -1,6 +1,7 @@
 use std::time::SystemTime;
 
-use autograd::{network::Network, val::BVal};
+use autograd::val::BVal;
+use network::network::Network;
 
 use crate::{
     mnist::{images_it::ImagesIt, labels_it::LabelsIt},
