@@ -7,9 +7,9 @@ const TEST_IMAGES_FILE_PATH: &str = "digits/digits_train/data/t10k-images-idx3-u
 const TEST_LABELS_FILE_PATH: &str = "digits/digits_train/data/t10k-labels-idx1-ubyte";
 
 const MODEL_FILE_NAME_PREFIX: &str = "digits";
-const MODELS_DIR: &str = "digits_runner/models";
-const PLOTS_DIR: &str = "digits_runner/plots";
-const FAILED_IMAGES_DIR: &str = "digits_runner/images";
+const MODELS_DIR: &str = "digits/digits_train_runner/models";
+const PLOTS_DIR: &str = "digits/digits_train_runner/plots";
+const FAILED_IMAGES_DIR: &str = "digits/digits_train_runner/images";
 
 const EPOCHS: u32 = 1;
 const BATCHES: u32 = 6000;
