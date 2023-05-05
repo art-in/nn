@@ -7,8 +7,6 @@ RUN rustup component add rustfmt clippy
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
 RUN apt-get install -y nodejs
 
-# install wasm-pack
-RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-
-# install serve
+# install global utils
+RUN cargo install wasm-pack@0.11.0
 RUN npm install -g serve@14.2.0

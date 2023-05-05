@@ -1,6 +1,6 @@
 use std::{
     fs::{self, File},
-    io::{BufReader, BufWriter},
+    io::{BufReader, BufWriter, Read},
 };
 
 use autograd::val::BVal;
@@ -88,10 +88,7 @@ impl Network {
         self.serialize_to_file_path(&path);
     }
 
-    fn deserialize_from_file_path(path: &str) -> Self {
-        let file = File::open(path).expect("failed to open file");
-        let mut reader = BufReader::new(file);
-
+    pub fn deserialize_from_reader(mut reader: impl Read) -> Self {
         // read network structure
         let layers_count = utils::read_u32(&mut reader);
         let mut layers_sizes: Vec<usize> = Vec::new();
@@ -113,6 +110,13 @@ impl Network {
         }
 
         net
+    }
+
+    fn deserialize_from_file_path(path: &str) -> Self {
+        let file = File::open(path).expect("failed to open file");
+        let reader = BufReader::new(file);
+
+        Self::deserialize_from_reader(reader)
     }
 
     pub fn new_or_deserialize_from_file(

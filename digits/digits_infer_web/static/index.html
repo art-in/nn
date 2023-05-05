@@ -3,11 +3,22 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   <title>digits_infer_web</title>
+  <link rel="stylesheet" href="index.css">
+  <script src="index.js" defer></script>
 </head>
 
 <body>
-  <script src="index.js"></script>
+  <div class="drawing-canvas-wrapper">
+    <canvas id="drawing"></canvas>
+    <canvas class="scaling" width="28" height="28"></canvas>
+    <button class="clear">clear</button>
+  </div>
+
+  <div class="chart-canvas-wrapper">
+    <canvas id="chart"></canvas>
+  </div>
 </body>
 
 </html>
