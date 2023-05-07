@@ -14,16 +14,16 @@ optimization process: pure stochastic gradient descent
 training:
 
 ```
-epoch 0: batches 3k (10 images per patch), learning rate (linear descent) 0.01 to 0.001
-epoch 1: batches 6k (10 images per patch), learning rate (linear descent) 0.01 to 0.001
-epoch 2: batches 6k (10 images per patch), learning rate (linear descent) 0.01 to 0.001
-epoch 3: batches 6k (10 images per patch), learning rate (linear descent) 0.01 to 0.001
-epoch 4: batches 6k (10 images per patch), learning rate (linear descent) 0.01 to 0.001
-epoch 5: batches 6k (10 images per patch), learning rate (linear descent) 0.01 to 0.001
+epoch 0: batches 3k (10 images per batch), learning rate (linear descent) 0.01 to 0.001
+epoch 1: batches 6k (10 images per batch), learning rate (linear descent) 0.01 to 0.001
+epoch 2: batches 6k (10 images per batch), learning rate (linear descent) 0.01 to 0.001
+epoch 3: batches 6k (10 images per batch), learning rate (linear descent) 0.01 to 0.001
+epoch 4: batches 6k (10 images per batch), learning rate (linear descent) 0.01 to 0.001
+epoch 5: batches 6k (10 images per batch), learning rate (linear descent) 0.01 to 0.001
 ```
 
 testing (error statistics on test set after epoch 5):
 
 ```
-count: 60000, errors: 5407, errors_percent: 0.09011666666666666
+count: 60000, errors: 5407, errors_percent: 0.09011666666666666 (9%)
 ```
