@@ -10,8 +10,5 @@
             }
         }
     },
-    "rust-analyzer.linkedProjects": [
-        "./Cargo.toml",
-    ],
     "resmon.show.cpufreq": false,
 }
