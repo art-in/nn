@@ -105,7 +105,9 @@ pub fn train(
                 net.serialize_to_file(models_dir, model_file_name_prefix);
             }
 
-            let batch_duration = SystemTime::now().duration_since(batch_start).unwrap();
+            let batch_duration = SystemTime::now()
+                .duration_since(batch_start)
+                .unwrap_or_default();
 
             println!(
                 "epoch = {epoch_idx}, \
