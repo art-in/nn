@@ -1,0 +1,9 @@
+[package]
+name = "nn_train_runner"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+autograd = { path = "../../../core/autograd" }
+network = { path = "../../../core/network" }
+nn_train = { path = "../train" }

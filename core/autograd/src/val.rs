@@ -58,7 +58,7 @@ impl Ord for Val {
     }
 }
 
-#[derive(PartialEq, Clone)]
+#[derive(PartialEq, Eq, Clone)]
 pub struct BVal(pub Rc<RefCell<Val>>);
 
 impl BVal {

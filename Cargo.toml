@@ -2,7 +2,13 @@
 members = [
     "core/autograd",
     "core/network",
-    "digits/digits_train",
-    "digits/digits_train_runner",
-    "digits/digits_infer_web",
+
+    "digits/infer_web",
+
+    "digits/nn/infer",
+    "digits/nn/train",
+    "digits/nn/train_runner",
+
+    "digits/dfdx/infer",
+    "digits/dfdx/train",
 ]

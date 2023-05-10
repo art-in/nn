@@ -1,0 +1,25 @@
+{
+  "name": "digits_infer_web",
+  "version": "0.1.0",
+  "scripts": {
+    "clean": "rimraf pack build",
+    "build": "npm run clean && wasm-pack build --out-dir build --out-name index --profiling",
+    "start": "npm run clean && webpack-dev-server --mode development",
+    "pack": "npm run clean && webpack --mode production",
+    "serve": "npm run pack && serve pack",
+    "lint": "cargo clippy",
+    "test": "cargo test"
+  },
+  "devDependencies": {
+    "@wasm-tool/wasm-pack-plugin": "^1.7.0",
+    "chart.js": "^4.2.1",
+    "chartjs-plugin-datalabels": "^2.2.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "fabric": "^5.3.0",
+    "rimraf": "^5.0.0",
+    "webpack": "^5.82.0",
+    "webpack-cli": "^5.0.2",
+    "webpack-dev-server": "^4.13.3",
+    "lodash": "^4.17.21"
+  }
+}

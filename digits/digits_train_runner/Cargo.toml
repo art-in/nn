@@ -1,9 +1,0 @@
-[package]
-name = "digits_train_runner"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-autograd = { path = "../../core/autograd" }
-network = { path = "../../core/network" }
-digits_train = { path = "../digits_train" }

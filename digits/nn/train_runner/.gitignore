@@ -1,0 +1,5 @@
+/images/*
+!/images/.keep
+
+/plots/*
+!/plots/.keep
