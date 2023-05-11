@@ -1,0 +1,50 @@
+use dfdx::data::ExactSizeDataset;
+use mnist::{Mnist, MnistBuilder};
+
+const MNIST_PATH: &str = "../../mnist/";
+
+pub enum MnistDataSetKind {
+    Train,
+    Test,
+}
+
+pub struct MnistDataSet(Mnist, MnistDataSetKind);
+
+impl MnistDataSet {
+    pub fn new(kind: MnistDataSetKind) -> Self {
+        Self(MnistBuilder::new().base_path(MNIST_PATH).finalize(), kind)
+    }
+
+    fn get_images(&self) -> &Vec<u8> {
+        match self.1 {
+            MnistDataSetKind::Train => &self.0.trn_img,
+            MnistDataSetKind::Test => &self.0.tst_img,
+        }
+    }
+
+    fn get_labels(&self) -> &Vec<u8> {
+        match self.1 {
+            MnistDataSetKind::Train => &self.0.trn_lbl,
+            MnistDataSetKind::Test => &self.0.tst_lbl,
+        }
+    }
+}
+
+impl ExactSizeDataset for MnistDataSet {
+    type Item<'a> = (Vec<f32>, usize) where Self: 'a;
+
+    fn get(&self, index: usize) -> Self::Item<'_> {
+        let images = self.get_images();
+        let labels = self.get_labels();
+
+        let mut image: Vec<f32> = Vec::with_capacity(784);
+        let start = 784 * index;
+        image.extend(images[start..start + 784].iter().map(|x| *x as f32 / 255.0));
+
+        (image, labels[index] as usize)
+    }
+
+    fn len(&self) -> usize {
+        self.get_labels().len()
+    }
+}

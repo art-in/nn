@@ -12,9 +12,11 @@ static MODEL: &[u8] = include_bytes!("../../train/models/conv/mnist.npz");
 pub static NETWORK: Lazy<ModelBuild> = Lazy::new(|| {
     let device = AutoDevice::default();
     let mut model = device.build_module::<Model, f32>();
+
     let reader = Cursor::new(MODEL);
     let mut zip = ZipArchive::new(reader).expect("failed to read model archive");
     model.read(&mut zip).expect("failed to read model");
+
     model
 });
 

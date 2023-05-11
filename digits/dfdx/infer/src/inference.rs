@@ -14,9 +14,8 @@ pub fn infer(image: &[f64]) -> Vec<f64> {
     let image: Vec<f32> = image.iter().map(|n| *n as f32 / 2.0 + 0.5).collect();
 
     let device = AutoDevice::default();
-    let data: Tensor<Rank3<1, IMAGE_SIZE, IMAGE_SIZE>, f32, _> = device.tensor(image);
-
-    let output = NETWORK.forward(data);
+    let input: Tensor<Rank3<1, IMAGE_SIZE, IMAGE_SIZE>, f32, _> = device.tensor(image);
+    let output = NETWORK.forward(input);
 
     output.as_vec().iter().map(|n| *n as f64).collect()
 }

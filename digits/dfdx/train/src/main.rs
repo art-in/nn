@@ -9,20 +9,22 @@ use dfdx::{
 };
 use model_type::Model;
 
+mod data;
 mod model_type;
 mod test;
 mod train;
+mod utils;
+
+const MODEL_PATH: &str = "./models/mnist.npz";
 
 fn main() {
-    let dev = AutoDevice::default();
-    let mut model = dev.build_module::<Model, f32>();
+    let device = AutoDevice::default();
+    let mut model = device.build_module::<Model, f32>();
 
-    if metadata("./models/mnist.npz").is_ok() {
-        println!("loading model from file");
-        model
-            .load("./models/mnist.npz")
-            .expect("failed to load model");
+    if metadata(MODEL_PATH).is_ok() {
+        println!("loading model from file: {MODEL_PATH}");
+        model.load(MODEL_PATH).expect("failed to load model");
     }
 
-    train::train(&dev, &mut model);
+    train::train(&device, &mut model, MODEL_PATH);
 }
