@@ -1,7 +1,7 @@
 import fabric from 'fabric';
 
 const canvas = new fabric.fabric.Canvas("drawing", { isDrawingMode: true });
-canvas.freeDrawingBrush.width = 70;
+canvas.freeDrawingBrush.width = 50;
 
 export default canvas;
 

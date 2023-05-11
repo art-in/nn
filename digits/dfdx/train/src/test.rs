@@ -7,15 +7,13 @@ use dfdx::{
 use indicatif::ProgressIterator;
 
 use crate::{
-    data::{MnistDataSet, MnistDataSetKind},
-    model_type::ModelBuild,
-    utils,
+    data::MnistDataSetKind, data_aug::AugmentedMnistDataSet, model_type::ModelBuild, utils,
 };
 
-pub fn test(model: &ModelBuild) -> f32 {
+pub fn test(model: &ModelBuild, is_log: bool) -> f32 {
     let device = Cpu::default();
 
-    let dataset = MnistDataSet::new(MnistDataSetKind::Test);
+    let dataset = AugmentedMnistDataSet::new(MnistDataSetKind::Test, 2);
 
     let mut errors = 0;
 
@@ -28,11 +26,13 @@ pub fn test(model: &ModelBuild) -> f32 {
 
     let errors_percent = (errors as f32 / dataset.len() as f32) * 100.0;
 
-    println!(
-        "images: {}, errors: {errors}, error_percent: {:.2}%",
-        dataset.len(),
-        errors_percent
-    );
+    if is_log {
+        println!(
+            "images: {}, errors: {errors}, error_percent: {:.2}%",
+            dataset.len(),
+            errors_percent
+        );
+    }
 
     errors_percent
 }

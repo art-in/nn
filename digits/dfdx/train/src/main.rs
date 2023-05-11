@@ -10,6 +10,7 @@ use dfdx::{
 use model_type::Model;
 
 mod data;
+mod data_aug;
 mod model_type;
 mod test;
 mod train;
@@ -27,4 +28,6 @@ fn main() {
     }
 
     train::train(&device, &mut model, MODEL_PATH);
+
+    test::test(&model, true);
 }

@@ -1,5 +1,6 @@
-use std::time::Instant;
+use std::time::{Instant, SystemTime};
 
+use chrono::{DateTime, Utc};
 use dfdx::optim::{Momentum, Sgd, SgdConfig};
 use indicatif::ProgressIterator;
 use rand::prelude::{SeedableRng, StdRng};
@@ -7,7 +8,8 @@ use rand::prelude::{SeedableRng, StdRng};
 use dfdx::prelude::*;
 use dfdx::{data::*, tensor::AutoDevice};
 
-use crate::data::{MnistDataSet, MnistDataSetKind};
+use crate::data::MnistDataSetKind;
+use crate::data_aug::AugmentedMnistDataSet;
 use crate::model_type::ModelBuild;
 use crate::test::{self};
 
@@ -19,8 +21,12 @@ pub fn train(dev: &AutoDevice, model: &mut ModelBuild, model_path: &str) {
     // ftz substantially improves performance
     dfdx::flush_denormals_to_zero();
 
-    let dataset = MnistDataSet::new(MnistDataSetKind::Train);
-    println!("found {:?} training images", dataset.len());
+    let dataset = AugmentedMnistDataSet::new(MnistDataSetKind::Train, 2);
+    println!(
+        "start training. time: {}, found {:?} training images",
+        DateTime::<Utc>::from(SystemTime::now()).to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
+        dataset.len()
+    );
 
     let mut rng = StdRng::seed_from_u64(0);
     let mut grads = model.alloc_grads();
@@ -73,16 +79,16 @@ pub fn train(dev: &AutoDevice, model: &mut ModelBuild, model_path: &str) {
 
         let duration = Instant::now().duration_since(epoch_start);
 
+        let errors_percent = test::test(model, false);
+
         println!(
-            "epoch {epoch_idx} in {}s ({:.3} batches/s): avg sample loss {:.5}",
+            "epoch {epoch_idx} in {}s ({:.3} batches/s): avg sample loss {:.5}, errors {:.2}%",
             duration.as_secs(),
             batches_count as f32 / duration.as_secs_f32(),
-            BATCH_SIZE as f32 * total_epoch_loss / batches_count as f32
+            BATCH_SIZE as f32 * total_epoch_loss / batches_count as f32,
+            errors_percent
         );
 
-        test::test(model);
+        model.save(model_path).expect("failed to save model");
     }
-
-    println!("saving model to file: {model_path}");
-    model.save(model_path).expect("failed to save model");
 }
