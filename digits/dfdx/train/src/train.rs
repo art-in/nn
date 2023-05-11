@@ -1,7 +1,7 @@
 use std::time::{Instant, SystemTime};
 
 use chrono::{DateTime, Utc};
-use dfdx::optim::{Momentum, Sgd, SgdConfig};
+use dfdx::optim::{Adam, AdamConfig};
 use indicatif::ProgressIterator;
 use rand::prelude::{SeedableRng, StdRng};
 
@@ -31,14 +31,15 @@ pub fn train(dev: &AutoDevice, model: &mut ModelBuild, model_path: &str) {
     let mut rng = StdRng::seed_from_u64(0);
     let mut grads = model.alloc_grads();
 
-    let mut opt: Sgd<ModelBuild, f32, AutoDevice> = Sgd::new(
-        model,
-        SgdConfig {
-            lr: 0.01,
-            momentum: Some(Momentum::Classic(0.9)),
-            weight_decay: None,
-        },
-    );
+    let mut opt = Adam::new(model, AdamConfig::default());
+    // let mut opt: Sgd<ModelBuild, f32, AutoDevice> = Sgd::new(
+    //     model,
+    //     SgdConfig {
+    //         lr: 0.01,
+    //         momentum: Some(Momentum::Classic(0.9)),
+    //         weight_decay: None,
+    //     },
+    // );
 
     let tenzorify = |(image, label)| {
         let mut one_hotted = [0.0; 10];
