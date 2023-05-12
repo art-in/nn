@@ -22,9 +22,11 @@ pub fn train(dev: &AutoDevice, model: &mut ModelBuild, model_path: &str) {
     dfdx::flush_denormals_to_zero();
 
     let dataset = AugmentedMnistDataSet::new(MnistDataSetKind::Train, 2);
+
     println!(
-        "start training. time: {}, found {:?} training images",
+        "start training. time: {}, model params: {}, training images: {}",
         DateTime::<Utc>::from(SystemTime::now()).to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
+        model.num_trainable_params(),
         dataset.len()
     );
 
