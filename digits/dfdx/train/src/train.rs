@@ -13,11 +13,11 @@ use crate::data_aug::AugmentedMnistDataSet;
 use crate::model_type::ModelBuild;
 use crate::test::{self};
 
-const EPOCHS: i32 = 10;
+const EPOCHS: i32 = 100;
 const BATCH_SIZE: usize = 32;
 const IMAGE_SIZE: usize = 28;
 
-pub fn train(dev: &AutoDevice, model: &mut ModelBuild, model_path: &str) {
+pub fn train(device: &AutoDevice, model: &mut ModelBuild, model_path: &str) {
     // ftz substantially improves performance
     dfdx::flush_denormals_to_zero();
 
@@ -47,11 +47,11 @@ pub fn train(dev: &AutoDevice, model: &mut ModelBuild, model_path: &str) {
         let mut one_hotted = [0.0; 10];
         one_hotted[label] = 1.0;
         (
-            dev.tensor_from_vec(
+            device.tensor_from_vec(
                 image,
                 (Const::<1>, Const::<IMAGE_SIZE>, Const::<IMAGE_SIZE>),
             ),
-            dev.tensor(one_hotted),
+            device.tensor(one_hotted),
         )
     };
 
@@ -82,7 +82,7 @@ pub fn train(dev: &AutoDevice, model: &mut ModelBuild, model_path: &str) {
 
         let duration = Instant::now().duration_since(epoch_start);
 
-        let errors_percent = test::test(model, false);
+        let errors_percent = test::test(device, model, false);
 
         println!(
             "epoch {epoch_idx} in {}s ({:.3} batches/s): avg sample loss {:.5}, errors {:.2}%",

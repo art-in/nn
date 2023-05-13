@@ -2,7 +2,7 @@ use dfdx::{
     data::ExactSizeDataset,
     prelude::{Module, NumParams},
     shapes::Rank3,
-    tensor::{Cpu, Tensor, TensorFrom},
+    tensor::{AutoDevice, Tensor, TensorFrom},
 };
 use indicatif::ProgressIterator;
 
@@ -10,9 +10,7 @@ use crate::{
     data::MnistDataSetKind, data_aug::AugmentedMnistDataSet, model_type::ModelBuild, utils,
 };
 
-pub fn test(model: &ModelBuild, is_log: bool) -> f32 {
-    let device = Cpu::default();
-
+pub fn test(device: &AutoDevice, model: &ModelBuild, is_log: bool) -> f32 {
     let dataset = AugmentedMnistDataSet::new(MnistDataSetKind::Test, 2);
 
     if is_log {

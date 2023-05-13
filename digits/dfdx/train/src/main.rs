@@ -29,5 +29,5 @@ fn main() {
 
     train::train(&device, &mut model, MODEL_PATH);
 
-    test::test(&model, true);
+    test::test(&device, &model, true);
 }
