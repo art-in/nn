@@ -1,6 +1,6 @@
 use dfdx::{
     data::ExactSizeDataset,
-    prelude::Module,
+    prelude::{Module, NumParams},
     shapes::Rank3,
     tensor::{Cpu, Tensor, TensorFrom},
 };
@@ -14,6 +14,14 @@ pub fn test(model: &ModelBuild, is_log: bool) -> f32 {
     let device = Cpu::default();
 
     let dataset = AugmentedMnistDataSet::new(MnistDataSetKind::Test, 2);
+
+    if is_log {
+        println!(
+            "start testing. model params: {}, dataset size: {}",
+            model.num_trainable_params(),
+            dataset.len()
+        );
+    }
 
     let mut errors = 0;
 
