@@ -1,7 +1,6 @@
 import fabric from 'fabric';
 
 const canvas = new fabric.fabric.Canvas("drawing", { isDrawingMode: true });
-canvas.freeDrawingBrush.width = 50;
 
 export default canvas;
 
@@ -13,6 +12,8 @@ function resizeCanvas() {
     const rect = drawingCanvasWrapper.getBoundingClientRect();
 
     const size = Math.min(rect.width, rect.height);
+
+    canvas.freeDrawingBrush.width = size / 15;
 
     canvas.setWidth(size);
     canvas.setHeight(size);
