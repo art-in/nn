@@ -1,3 +1,5 @@
+import { ReImg } from 'reimg';
+
 const scalingCanvasEl = document.querySelector('canvas.scaling');
 const scalingCtx = scalingCanvasEl.getContext('2d', { willReadFrequently: true });
 
@@ -6,7 +8,8 @@ scalingCtx.imageSmoothingEnabled = true;
 export function scaleImage(sourceCanvas, targetSize) {
     const sourceImageBoundaries = getSquareImageBoundariesWithPadding(sourceCanvas);
 
-    scalingCtx.clearRect(0, 0, targetSize, targetSize);
+    scalingCtx.fillStyle = 'white';
+    scalingCtx.fillRect(0, 0, targetSize, targetSize);
     scalingCtx.drawImage(
         sourceCanvas,
         sourceImageBoundaries.x, sourceImageBoundaries.y,
@@ -73,3 +76,7 @@ function getSquareImageBoundariesWithPadding(canvas) {
         height: squareEdgeSize
     };
 }
+
+scalingCanvasEl.addEventListener('click', () => {
+    ReImg.fromCanvas(scalingCanvasEl).downloadPng();
+});

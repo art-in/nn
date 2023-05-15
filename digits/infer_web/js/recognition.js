@@ -17,12 +17,12 @@ function prepareImage(imageData, targetSize) {
     for (let i = 0; i < pixelsCount; ++i) {
         let rgba = i * 4;
 
-        // empty pixel is transparent black - rgba(0, 0, 0, 0)
-        // non-empty pixel is opaque black  - rgba(0, 0, 0, 255)
-        let alphaChannel = imageData.data[rgba + 3];
+        // empty pixel is opaque white     - rgba(255, 255, 255, 255)
+        // non-empty pixel is opaque black - rgba(0, 0, 0, 255)
+        let ch = 255 - imageData.data[rgba];
 
         // convert image pixels from [0, 255] to [-1, 1]
-        image[i] = alphaChannel / 127.5 - 1;
+        image[i] = ch / 127.5 - 1;
     }
 
     return image;
