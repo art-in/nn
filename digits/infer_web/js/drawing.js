@@ -8,9 +8,9 @@ function onDrawingStep() {
     recognizeAndUpdateChart();
 }
 
-const onDrawingStepDebounced = lodash.throttle(
+const onDrawingStepDebounced = lodash.debounce(
     onDrawingStep,
-    500,
+    1000,
     { leading: false, trailing: true }
 );
 
