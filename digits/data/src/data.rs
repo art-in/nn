@@ -1,8 +1,6 @@
 use dfdx::data::ExactSizeDataset;
 use mnist::{Mnist, MnistBuilder};
 
-const MNIST_PATH: &str = "../../mnist/";
-
 pub enum MnistDataSetKind {
     Train,
     Test,
@@ -11,8 +9,8 @@ pub enum MnistDataSetKind {
 pub struct MnistDataSet(Mnist, MnistDataSetKind);
 
 impl MnistDataSet {
-    pub fn new(kind: MnistDataSetKind) -> Self {
-        Self(MnistBuilder::new().base_path(MNIST_PATH).finalize(), kind)
+    pub fn new(path: &str, kind: MnistDataSetKind) -> Self {
+        Self(MnistBuilder::new().base_path(path).finalize(), kind)
     }
 
     pub fn get_images(&self) -> &Vec<u8> {

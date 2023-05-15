@@ -1,6 +1,8 @@
 use std::time::{Instant, SystemTime};
 
 use chrono::{DateTime, Utc};
+use data::data::MnistDataSetKind;
+use data::data_aug::AugmentedMnistDataSet;
 use dfdx::optim::{Adam, AdamConfig};
 use indicatif::ProgressIterator;
 use rand::prelude::{SeedableRng, StdRng};
@@ -8,20 +10,19 @@ use rand::prelude::{SeedableRng, StdRng};
 use dfdx::prelude::*;
 use dfdx::{data::*, tensor::AutoDevice};
 
-use crate::data::MnistDataSetKind;
-use crate::data_aug::AugmentedMnistDataSet;
 use crate::model_type::ModelBuild;
 use crate::test::{self};
+use crate::{MNIST_PATH, MODEL_PATH};
 
 const EPOCHS: i32 = 100;
 const BATCH_SIZE: usize = 32;
 const IMAGE_SIZE: usize = 28;
 
-pub fn train(device: &AutoDevice, model: &mut ModelBuild, model_path: &str) {
+pub fn train(device: &AutoDevice, model: &mut ModelBuild) {
     // ftz substantially improves performance
     dfdx::flush_denormals_to_zero();
 
-    let dataset = AugmentedMnistDataSet::new(MnistDataSetKind::Train, 2);
+    let dataset = AugmentedMnistDataSet::new(MNIST_PATH, MnistDataSetKind::Train, 2);
 
     println!(
         "start training. time: {}, model params: {}, dataset size: {}",
@@ -92,6 +93,6 @@ pub fn train(device: &AutoDevice, model: &mut ModelBuild, model_path: &str) {
             errors_percent
         );
 
-        model.save(model_path).expect("failed to save model");
+        model.save(MODEL_PATH).expect("failed to save model");
     }
 }

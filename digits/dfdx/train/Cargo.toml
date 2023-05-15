@@ -8,13 +8,9 @@ default = []
 gpu = ["dfdx/cuda"]
 
 [dependencies]
+data = { path = "../../data" }
 dfdx = { version = "0.11.2", features = ["numpy"] }
 indicatif = "0.17.3"
-mnist = "0.5.0"
 rand = "0.8.5"
 zip = { version = "0.6.2", default-features = false }
 chrono = "0.4.24"
-moving-least-squares = "0.1.0"
-moving-least-squares-image = "0.1.0"
-image = "0.23.14"
-imageproc = "0.22.0"

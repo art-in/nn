@@ -1,3 +1,4 @@
+use data::{data::MnistDataSetKind, data_aug::AugmentedMnistDataSet};
 use dfdx::{
     data::ExactSizeDataset,
     prelude::{Module, NumParams},
@@ -6,12 +7,10 @@ use dfdx::{
 };
 use indicatif::ProgressIterator;
 
-use crate::{
-    data::MnistDataSetKind, data_aug::AugmentedMnistDataSet, model_type::ModelBuild, utils,
-};
+use crate::{model_type::ModelBuild, utils, MNIST_PATH};
 
 pub fn test(device: &AutoDevice, model: &ModelBuild, is_log: bool) -> f32 {
-    let dataset = AugmentedMnistDataSet::new(MnistDataSetKind::Test, 2);
+    let dataset = AugmentedMnistDataSet::new(MNIST_PATH, MnistDataSetKind::Test, 2);
 
     if is_log {
         println!(

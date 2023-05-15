@@ -9,14 +9,13 @@ use dfdx::{
 };
 use model_type::Model;
 
-mod data;
-mod data_aug;
 mod model_type;
 mod test;
 mod train;
 mod utils;
 
-const MODEL_PATH: &str = "./models/mnist.npz";
+pub const MNIST_PATH: &str = "../../mnist";
+pub const MODEL_PATH: &str = "./models/mnist.npz";
 
 fn main() {
     let device = AutoDevice::default();
@@ -27,7 +26,7 @@ fn main() {
         model.load(MODEL_PATH).expect("failed to load model");
     }
 
-    train::train(&device, &mut model, MODEL_PATH);
+    train::train(&device, &mut model);
 
     test::test(&device, &model, true);
 }

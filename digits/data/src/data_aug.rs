@@ -35,9 +35,9 @@ struct DeformationConfig {
 }
 
 impl AugmentedMnistDataSet {
-    pub fn new(kind: MnistDataSetKind, aug_ratio: usize) -> Self {
+    pub fn new(path: &str, kind: MnistDataSetKind, aug_ratio: usize) -> Self {
         Self {
-            dataset: MnistDataSet::new(kind),
+            dataset: MnistDataSet::new(path, kind),
             aug_ratio,
             cfg: DeformationConfig {
                 max_mls_grid_density: 3,
@@ -210,8 +210,8 @@ fn apply_moving_least_squares_deformation(
 }
 
 #[allow(dead_code)]
-pub fn dump_augmented_dataset_images() {
-    let dataset = AugmentedMnistDataSet::new(MnistDataSetKind::Test, 5);
+pub fn dump_augmented_dataset_images(mnist_path: &str) {
+    let dataset = AugmentedMnistDataSet::new(mnist_path, MnistDataSetKind::Test, 5);
 
     let mut rng = rand::thread_rng();
     for (idx, (image, label)) in dataset.shuffled(&mut rng).enumerate() {
