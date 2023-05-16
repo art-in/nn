@@ -9,9 +9,10 @@ use rand::prelude::{SeedableRng, StdRng};
 use dfdx::prelude::*;
 use dfdx::{data::*, tensor::AutoDevice};
 
+use crate::deform::DATASET_DEFORM_CFG;
 use crate::model_type::ModelBuild;
 use crate::test::{self};
-use crate::{MNIST_PATH, MODEL_PATH};
+use crate::{DATASET_PATH, MODEL_PATH};
 
 const EPOCHS: i32 = 100;
 const BATCH_SIZE: usize = 32;
@@ -21,7 +22,8 @@ pub fn train(device: &AutoDevice, model: &mut ModelBuild) {
     // ftz substantially improves performance
     dfdx::flush_denormals_to_zero();
 
-    let dataset = AugmentedMnistDataSet::new(MNIST_PATH, MnistDataSetKind::Train, 2);
+    let dataset =
+        AugmentedMnistDataSet::new(DATASET_PATH, MnistDataSetKind::Train, 2, DATASET_DEFORM_CFG);
 
     println!(
         "start training. time: {}, model params: {}, dataset size: {}",
@@ -34,14 +36,6 @@ pub fn train(device: &AutoDevice, model: &mut ModelBuild) {
     let mut grads = model.alloc_grads();
 
     let mut opt = Adam::new(model, AdamConfig::default());
-    // let mut opt: Sgd<ModelBuild, f32, AutoDevice> = Sgd::new(
-    //     model,
-    //     SgdConfig {
-    //         lr: 0.01,
-    //         momentum: Some(Momentum::Classic(0.9)),
-    //         weight_decay: None,
-    //     },
-    // );
 
     let tenzorify = |(image, label)| {
         let mut one_hotted = [0.0; 10];

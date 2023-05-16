@@ -21,33 +21,44 @@ pub struct AugmentedMnistDataSet {
     // (each source sample will have two deformed derivatives)
     aug_ratio: usize,
 
-    cfg: DeformationConfig,
+    deform_cfg: DeformationConfig,
 }
 
-struct DeformationConfig {
-    max_mls_grid_density: usize,
-    max_mls_shift: f32,
-    max_rotate_degree: (f32, f32),
-    max_blur: f32,
-    max_contrast: f32,
-    max_scale: f32,
-    max_shift: u32,
+pub struct DeformationConfig {
+    pub max_mls_grid_density: usize,
+    pub max_mls_shift: f32,
+    pub max_rotate_degree: (f32, f32),
+    pub max_blur: f32,
+    pub max_contrast: f32,
+    pub max_scale: f32,
+    pub max_shift: u32,
+}
+
+impl Default for DeformationConfig {
+    fn default() -> Self {
+        Self {
+            max_mls_grid_density: 0,
+            max_mls_shift: 0.0,
+            max_rotate_degree: (0.0, 0.0),
+            max_blur: 0.0,
+            max_contrast: 0.0,
+            max_scale: 0.0,
+            max_shift: 0,
+        }
+    }
 }
 
 impl AugmentedMnistDataSet {
-    pub fn new(path: &str, kind: MnistDataSetKind, aug_ratio: usize) -> Self {
+    pub fn new(
+        path: &str,
+        kind: MnistDataSetKind,
+        aug_ratio: usize,
+        deform_cfg: DeformationConfig,
+    ) -> Self {
         Self {
             dataset: MnistDataSet::new(path, kind),
             aug_ratio,
-            cfg: DeformationConfig {
-                max_mls_grid_density: 3,
-                max_mls_shift: 2.0,
-                max_rotate_degree: (-35.0, 5.0),
-                max_blur: 0.3,
-                max_contrast: 200.0,
-                max_scale: 0.25,
-                max_shift: 5,
-            },
+            deform_cfg,
         }
     }
 }
@@ -67,7 +78,7 @@ impl ExactSizeDataset for AugmentedMnistDataSet {
             let original_image_rgb: RgbImage =
                 utils::mnist_to_rgb_image(&original_image, IMAGE_SIZE, IMAGE_SIZE);
 
-            let new_image_rgb = deform_image(&original_image_rgb, &self.cfg);
+            let new_image_rgb = deform_image(&original_image_rgb, &self.deform_cfg);
             let new_image = utils::rgb_to_mnist_image(new_image_rgb, IMAGE_SIZE, IMAGE_SIZE);
 
             (new_image, original_label)

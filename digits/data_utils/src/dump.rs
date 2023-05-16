@@ -1,4 +1,4 @@
-use data_utils::{data::MnistDataSetKind, data_aug::AugmentedMnistDataSet};
+use data_utils::data::{MnistDataSet, MnistDataSetKind};
 use dfdx::data::ExactSizeDataset;
 use indicatif::ProgressIterator;
 
@@ -6,7 +6,7 @@ use crate::utils;
 
 #[allow(dead_code)]
 pub fn dump_dataset_images(mnist_path: &str) {
-    let dataset = AugmentedMnistDataSet::new(mnist_path, MnistDataSetKind::Train, 2);
+    let dataset = MnistDataSet::new(mnist_path, MnistDataSetKind::Train);
 
     let mut rng = rand::thread_rng();
     for (idx, (image, label)) in dataset.shuffled(&mut rng).enumerate().progress() {

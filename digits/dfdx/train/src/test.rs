@@ -7,10 +7,11 @@ use dfdx::{
 };
 use indicatif::ProgressIterator;
 
-use crate::{model_type::ModelBuild, utils, MNIST_PATH};
+use crate::{deform::DATASET_DEFORM_CFG, model_type::ModelBuild, utils, DATASET_PATH};
 
 pub fn test(device: &AutoDevice, model: &ModelBuild, is_log: bool) -> f32 {
-    let dataset = AugmentedMnistDataSet::new(MNIST_PATH, MnistDataSetKind::Test, 2);
+    let dataset =
+        AugmentedMnistDataSet::new(DATASET_PATH, MnistDataSetKind::Test, 2, DATASET_DEFORM_CFG);
 
     if is_log {
         println!(

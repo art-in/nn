@@ -10,12 +10,13 @@ use dfdx::{
 };
 use model_type::Model;
 
+mod deform;
 mod model_type;
 mod test;
 mod train;
 mod utils;
 
-pub const MNIST_PATH: &str = "../../data/mnist";
+pub const DATASET_PATH: &str = "../../data/mnist";
 pub const MODEL_PATH: &str = "./models/mnist.npz";
 
 fn main() {
