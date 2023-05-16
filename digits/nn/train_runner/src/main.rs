@@ -1,10 +1,10 @@
 use network::network::Network;
 use nn_train::{test::test, train::train};
 
-const TRAIN_IMAGES_FILE_PATH: &str = "../../mnist/train-images-idx3-ubyte";
-const TRAIN_LABELS_FILE_PATH: &str = "../../mnist/train-labels-idx1-ubyte";
-const TEST_IMAGES_FILE_PATH: &str = "../../mnist/t10k-images-idx3-ubyte";
-const TEST_LABELS_FILE_PATH: &str = "../../mnist/t10k-labels-idx1-ubyte";
+const TRAIN_IMAGES_FILE_PATH: &str = "../../data/mnist/train-images-idx3-ubyte";
+const TRAIN_LABELS_FILE_PATH: &str = "../../data/mnist/train-labels-idx1-ubyte";
+const TEST_IMAGES_FILE_PATH: &str = "../../data/mnist/t10k-images-idx3-ubyte";
+const TEST_LABELS_FILE_PATH: &str = "../../data/mnist/t10k-labels-idx1-ubyte";
 
 const MODEL_FILE_NAME_PREFIX: &str = "digits";
 const MODELS_DIR: &str = "./models";

@@ -4,8 +4,8 @@ use criterion::{criterion_group, criterion_main, Criterion};
 use network::network::Network;
 use nn_train::train::train;
 
-const TRAIN_IMAGES_FILE_PATH: &str = "../../mnist/train-images-idx3-ubyte";
-const TRAIN_LABELS_FILE_PATH: &str = "../../mnist/train-labels-idx1-ubyte";
+const TRAIN_IMAGES_FILE_PATH: &str = "../../data/mnist/train-images-idx3-ubyte";
+const TRAIN_LABELS_FILE_PATH: &str = "../../data/mnist/train-labels-idx1-ubyte";
 
 pub fn train_benchmark(c: &mut Criterion) {
     let mut net = Network::new(vec![784, 200, 80, 10]);

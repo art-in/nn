@@ -60,7 +60,9 @@ function getSquareImageBoundariesWithPadding(canvas) {
     let height = bottommostY - topmostY;
 
     // reshape found rectangle to square
-    const paddingRatio = 1.1;
+
+    // avg vertical padding for mnist images is ~4.5px (4.5 * 2 / 28 == ~0.3)
+    const paddingRatio = 1.3;
     const squareEdgeSize = Math.max(width, height) * paddingRatio;
 
     const squaredDiffX = squareEdgeSize - width;

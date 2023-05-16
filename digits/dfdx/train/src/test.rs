@@ -1,4 +1,4 @@
-use data::{data::MnistDataSetKind, data_aug::AugmentedMnistDataSet};
+use data_utils::{data::MnistDataSetKind, data_aug::AugmentedMnistDataSet};
 use dfdx::{
     data::ExactSizeDataset,
     prelude::{Module, NumParams},

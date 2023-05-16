@@ -1,8 +1,7 @@
 use std::time::{Instant, SystemTime};
 
 use chrono::{DateTime, Utc};
-use data::data::MnistDataSetKind;
-use data::data_aug::AugmentedMnistDataSet;
+use data_utils::{data::MnistDataSetKind, data_aug::AugmentedMnistDataSet};
 use dfdx::optim::{Adam, AdamConfig};
 use indicatif::ProgressIterator;
 use rand::prelude::{SeedableRng, StdRng};

@@ -1,4 +1,5 @@
 // required for dxdf
+#![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 
 use std::fs::metadata;
@@ -14,7 +15,7 @@ mod test;
 mod train;
 mod utils;
 
-pub const MNIST_PATH: &str = "../../mnist";
+pub const MNIST_PATH: &str = "../../data/mnist";
 pub const MODEL_PATH: &str = "./models/mnist.npz";
 
 fn main() {
