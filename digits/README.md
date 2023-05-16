@@ -1,7 +1,9 @@
 Recognizing handwritten digits with NN models.
 
-- `mnist/` - dataset for training
-- `data/` - utils to work with dataset
-- `nn/` - training models with local autograd/network implementation
-- `dxdf/` - training models with [dxdf](https://github.com/coreylowman/dfdx) third-party lib
-- `infer_web/` - web app for testing models by feeding digits drawn on canvas
+```
+data/        - datasets for training
+data_utils/  - utils to work with datasets
+nn/          - training models with local autograd/network implementation
+dxdf/        - training models with third-party lib dxdf 
+infer_web/   - web app for testing models by feeding digits drawn on HTML canvas
+```
