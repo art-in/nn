@@ -1,9 +1,6 @@
 FROM rust:latest
 
-# install rust components
-RUN rustup component add rustfmt clippy
-
-# rust nightly toolchain for dfdx lib
+# install rust components (nightly toolchain for dfdx lib)
 RUN rustup toolchain install nightly-2022-10-01-aarch64-unknown-linux-gnu
 RUN rustup component add rustfmt clippy --toolchain nightly-2022-10-01-aarch64-unknown-linux-gnu
 

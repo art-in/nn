@@ -1,5 +1,5 @@
 [toolchain]
 # using nightly channel, because dxdf uses generic constant expressions feature
 # https://github.com/rust-lang/rust/issues/76560
-# using old nightly build instead of current one, because it doesn't compile in current
+# using old nightly build instead of current one, because it doesn't compile in current (2023-05)
 channel = "nightly-2022-10-01"
