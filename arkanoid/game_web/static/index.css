@@ -1,0 +1,16 @@
+html,
+body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+html,
+button {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+canvas {
+    border: 1px solid black;
+    cursor: none;
+}

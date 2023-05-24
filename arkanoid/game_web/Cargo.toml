@@ -1,0 +1,29 @@
+[package]
+name = "arkanoid_game_web"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+arkanoid_game = { path = "../game" }
+
+wasm-bindgen = "0.2.86"
+console_error_panic_hook = "0.1.7"
+js-sys = "0.3.63"
+wee_alloc = "0.4.5"
+
+[dependencies.web-sys]
+version = "0.3.63"
+features = [
+    "console",
+    "Window",
+    "Document",
+    "HtmlElement",
+    "HtmlCanvasElement",
+    "CanvasRenderingContext2d",
+    "CssStyleDeclaration",
+    "Event",
+    "PointerEvent",
+]

@@ -4,11 +4,12 @@ members = [
     "core/network",
 
     "digits/infer_web",
-
     "digits/nn/infer",
     "digits/nn/train",
     "digits/nn/train_runner",
-
     "digits/dfdx/infer",
     "digits/dfdx/train",
+
+    "arkanoid/game",
+    "arkanoid/game_web",
 ]
