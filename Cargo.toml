@@ -3,13 +3,13 @@ members = [
     "core/autograd",
     "core/network",
 
-    "digits/infer_web",
-    "digits/nn/infer",
-    "digits/nn/train",
-    "digits/nn/train_runner",
-    "digits/dfdx/infer",
-    "digits/dfdx/train",
+    "experiments/digits/infer_web",
+    "experiments/digits/nn/infer",
+    "experiments/digits/nn/train",
+    "experiments/digits/nn/train_runner",
+    "experiments/digits/dfdx/infer",
+    "experiments/digits/dfdx/train",
 
-    "arkanoid/game",
-    "arkanoid/game_web",
+    "experiments/arkanoid/game",
+    "experiments/arkanoid/game_web",
 ]

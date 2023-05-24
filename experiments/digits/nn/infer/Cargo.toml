@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-network = { path = "../../../core/network" }
+network = { path = "../../../../core/network" }
 once_cell = "1.17.1"
