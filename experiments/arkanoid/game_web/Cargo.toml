@@ -8,11 +8,14 @@ crate-type = ["cdylib"]
 
 [dependencies]
 arkanoid_game = { path = "../game" }
+arkanoid_infer = { path = "../infer" }
+
+# so rand crate can be built for wasm target
+getrandom = { version = "0.2", features = ["js"] }
 
 wasm-bindgen = "0.2.86"
 console_error_panic_hook = "0.1.7"
 js-sys = "0.3.63"
-wee_alloc = "0.4.5"
 
 [dependencies.web-sys]
 version = "0.3.63"
@@ -26,4 +29,5 @@ features = [
     "CssStyleDeclaration",
     "Event",
     "PointerEvent",
+    "ImageData",
 ]

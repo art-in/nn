@@ -20,6 +20,14 @@ impl Circle {
         self.pos = new_pos;
     }
 
+    pub fn set_pos_clamped(&mut self, new_pos: VirtualPosition) {
+        let new_pos_clamped = VirtualPosition::new(
+            new_pos.x().max(0.0 + self.radius).min(1.0 - self.radius),
+            new_pos.y().max(0.0 + self.radius).min(1.0 - self.radius),
+        );
+        self.set_pos(new_pos_clamped);
+    }
+
     pub fn pos(&self) -> &VirtualPosition {
         &self.pos
     }

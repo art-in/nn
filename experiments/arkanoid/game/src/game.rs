@@ -28,8 +28,12 @@ impl<TDrawer: DrawGameState> Game<TDrawer> {
         }
     }
 
-    pub fn draw(&self) {
+    pub fn draw(&mut self) {
         self.drawer.draw(&self.state);
+    }
+
+    pub fn drawer(&self) -> &TDrawer {
+        &self.drawer
     }
 
     pub fn set_stop_flags(&mut self, stop_on_fail: bool, stop_on_win: bool) {
@@ -106,20 +110,22 @@ impl<TDrawer: DrawGameState> Game<TDrawer> {
 
         if let Some(collision) = collision {
             // bounce ball out of collision point
-            self.state.ball_mut().set_pos(collision.circle_center);
+            self.state
+                .ball_mut()
+                .bounds_mut()
+                .set_pos(collision.circle_center);
             let reflected_angle =
                 reflect_angle_by_normal(self.state.ball().dir().angle(), collision.rect_norm);
             self.state
                 .ball_mut()
                 .set_dir(Direction::new(reflected_angle));
         } else {
-            self.state.ball_mut().set_pos(new_ball_bounds.pos().clone());
+            self.state
+                .ball_mut()
+                .bounds_mut()
+                .set_pos(new_ball_bounds.pos().clone());
         }
 
         GameStatus::InProgress
-    }
-
-    pub fn move_platform_to(&mut self, center_virtual_x: f64) {
-        self.state.platform_mut().move_to(center_virtual_x);
     }
 }

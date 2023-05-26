@@ -59,11 +59,34 @@ name = "arkanoid_game_web"
 version = "0.1.0"
 dependencies = [
  "arkanoid_game",
+ "arkanoid_infer",
  "console_error_panic_hook",
+ "getrandom 0.2.9",
  "js-sys",
  "wasm-bindgen",
  "web-sys",
- "wee_alloc",
+]
+
+[[package]]
+name = "arkanoid_infer"
+version = "0.1.0"
+dependencies = [
+ "dfdx",
+ "once_cell",
+ "zip",
+]
+
+[[package]]
+name = "arkanoid_train"
+version = "0.1.0"
+dependencies = [
+ "arkanoid_game",
+ "chrono",
+ "colors-transform",
+ "dfdx",
+ "image 0.24.6",
+ "indicatif",
+ "rand 0.8.5",
 ]
 
 [[package]]
@@ -232,6 +255,12 @@ name = "color_quant"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3d7b894f5411737b7867f4827955924d7c254fc9f4d91a6aad6b097804b1018b"
+
+[[package]]
+name = "colors-transform"
+version = "0.2.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9226dbc05df4fb986f48d730b001532580883c4c06c5d1c213f4b34c1c157178"
 
 [[package]]
 name = "console"

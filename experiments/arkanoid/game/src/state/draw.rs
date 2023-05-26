@@ -3,16 +3,16 @@ use crate::primitives::{circle::Circle, rect::Rect};
 use super::State;
 
 pub trait DrawGameState {
-    fn clear(&self);
-    fn rect(&self, bounds: &Rect, color: &str, border_color: &str);
-    fn circle(&self, bounds: &Circle, color: &str, border_color: &str);
+    fn clear(&mut self);
+    fn rect(&mut self, bounds: &Rect, color: &str, border_color: &str);
+    fn circle(&mut self, bounds: &Circle, color: &str, border_color: &str);
 
-    fn draw(&self, state: &State) {
+    fn draw(&mut self, state: &State) {
         self.clear();
         for block in state.block_set().active_blocks() {
-            self.rect(block.bounds(), "#add8e6", "#0000ff")
+            self.rect(block.bounds(), "#0000ff", "#0000ff") // "#add8e6"
         }
-        self.circle(state.ball().bounds(), "#f7a88b", "#ff0000");
-        self.rect(state.platform().bounds(), "#90ee90", "#006400");
+        self.rect(state.platform().bounds(), "#00ff00", "#00ff00"); // "#90ee90"
+        self.circle(state.ball().bounds(), "#ff0000", "#ff0000"); // "#f7a88b"
     }
 }

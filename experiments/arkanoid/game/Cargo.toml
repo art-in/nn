@@ -9,6 +9,7 @@ harness = false
 
 [dependencies]
 ncollide2d = "0.33.0"
+rand = "0.8.5"
 
 [dev-dependencies]
 rand = "0.8.5"

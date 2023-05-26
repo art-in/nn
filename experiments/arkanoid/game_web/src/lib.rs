@@ -1,12 +1,9 @@
 use game::GameWebRc;
 use wasm_bindgen::prelude::*;
 
-mod drawer;
+mod canvas_drawer;
 mod game;
 mod utils;
-
-#[global_allocator]
-static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[wasm_bindgen(start)]
 pub fn main_js() {

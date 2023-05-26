@@ -6,6 +6,7 @@ const buildDir = path.resolve(__dirname, "build");
 const packDir = path.resolve(__dirname, "pack");
 const staticDir = path.resolve(__dirname, "static");
 const gameDir = path.resolve(__dirname, "../game");
+const inferDir = path.resolve(__dirname, "../infer");
 
 module.exports = {
   entry: {
@@ -26,7 +27,7 @@ module.exports = {
     new WasmPackPlugin({
       crateDirectory: __dirname,
       outDir: buildDir,
-      watchDirectories: [gameDir]
+      watchDirectories: [gameDir, inferDir]
     })
   ],
   devtool: 'eval-source-map',

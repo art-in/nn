@@ -1,10 +1,11 @@
 use arkanoid_game::game::{Game, GameStatus};
+use arkanoid_infer::inference::predict_platform_position_x;
 use std::{cell::RefCell, ops::Deref, rc::Rc};
 use wasm_bindgen::{prelude::Closure, JsCast};
 use web_sys::HtmlCanvasElement;
 
 use crate::{
-    drawer::CanvasGameStateDrawer,
+    canvas_drawer::CanvasGameStateDrawer,
     utils::{
         canvas::resize_canvas,
         listener::{window_add_event_listener, window_remove_event_listener},
@@ -86,10 +87,21 @@ impl GameWebRc {
     }
 
     pub fn step(&self) -> bool {
-        let status = self.borrow_mut().game.step();
-        self.borrow().game.draw();
+        self.borrow_mut().game.draw();
 
-        if status == GameStatus::InProgress {
+        let image = self.borrow().game.drawer().get_image();
+        let predicted_platform_pos_x = predict_platform_position_x(
+            &image.data().to_vec(),
+            (image.width() as usize, image.height() as usize),
+        );
+
+        self.borrow_mut()
+            .game
+            .state_mut()
+            .platform_mut()
+            .set_pos_x(predicted_platform_pos_x);
+
+        if self.borrow_mut().game.step() == GameStatus::InProgress {
             true
         } else {
             self.unsubscribe();
@@ -143,6 +155,10 @@ impl GameWebRc {
 
         let virtual_x = event.client_x() as f64 / body.client_width() as f64;
 
-        self.borrow_mut().game.move_platform_to(virtual_x);
+        self.borrow_mut()
+            .game
+            .state_mut()
+            .platform_mut()
+            .set_pos_x_center(virtual_x);
     }
 }

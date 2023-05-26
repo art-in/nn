@@ -12,4 +12,6 @@ members = [
 
     "experiments/arkanoid/game",
     "experiments/arkanoid/game_web",
+    "experiments/arkanoid/train",
+    "experiments/arkanoid/infer",
 ]

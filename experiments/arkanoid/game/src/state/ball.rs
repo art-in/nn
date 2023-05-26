@@ -1,5 +1,7 @@
 use std::f64::consts::PI;
 
+use rand::Rng;
+
 use crate::primitives::{circle::Circle, direction::Direction, pos::VirtualPosition};
 
 const BALL_RADIUS: f64 = 0.03;
@@ -21,7 +23,8 @@ impl Ball {
             BALL_RADIUS,
         );
 
-        let dir = Direction::new(PI / 4.0);
+        let mut rng = rand::thread_rng();
+        let dir = Direction::new(rng.gen_range(PI * 0.25..PI * 0.75));
 
         Self {
             bounds,
@@ -34,8 +37,17 @@ impl Ball {
         &self.bounds
     }
 
+    pub fn bounds_mut(&mut self) -> &mut Circle {
+        &mut self.bounds
+    }
+
     pub fn velocity(&self) -> f64 {
         self.velocity
+    }
+
+    pub fn set_pos(&mut self, new_pos: VirtualPosition) -> &mut Self {
+        self.bounds.set_pos(new_pos);
+        self
     }
 
     pub fn dir(&self) -> &Direction {
@@ -44,15 +56,6 @@ impl Ball {
 
     pub fn set_dir(&mut self, new_dir: Direction) -> &mut Self {
         self.dir = new_dir;
-        self
-    }
-
-    pub fn pos(&self) -> &VirtualPosition {
-        self.bounds.pos()
-    }
-
-    pub fn set_pos(&mut self, new_pos: VirtualPosition) -> &mut Self {
-        self.bounds.set_pos(new_pos);
         self
     }
 

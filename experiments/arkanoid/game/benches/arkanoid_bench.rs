@@ -10,9 +10,9 @@ use rand::Rng;
 
 struct FakeDrawer {}
 impl DrawGameState for FakeDrawer {
-    fn clear(&self) {}
-    fn rect(&self, _: &Rect, _: &str, _: &str) {}
-    fn circle(&self, _: &Circle, _: &str, _: &str) {}
+    fn clear(&mut self) {}
+    fn rect(&mut self, _: &Rect, _: &str, _: &str) {}
+    fn circle(&mut self, _: &Circle, _: &str, _: &str) {}
 }
 
 #[inline]
@@ -40,7 +40,7 @@ fn play_game() {
         // rectangle corner), in this case direction change is too small and next step collides again.
         // moving ball out of touch immediately after collision solves the problem, this test just
         // makes sure ball doesn't stuck in one place or in close loop for some other reason
-        ball_prev_positions.push_back(game.state().ball().pos().clone());
+        ball_prev_positions.push_back(game.state().ball().bounds().pos().clone());
 
         if ball_prev_positions.len() > 100 {
             ball_prev_positions.pop_front();

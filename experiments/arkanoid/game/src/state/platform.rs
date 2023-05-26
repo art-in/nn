@@ -19,12 +19,15 @@ impl Platform {
         &self.bounds
     }
 
-    pub fn move_to(&mut self, center_virtual_x: f64) {
-        let x = center_virtual_x - PLATFORM_WIDTH / 2.0;
-        let x = x.max(0.0).min(1.0 - PLATFORM_WIDTH);
-
+    pub fn set_pos_x(&mut self, virtual_x: f64) {
+        let virtual_x = virtual_x.max(0.0).min(1.0 - PLATFORM_WIDTH);
         self.bounds
-            .move_to(VirtualPosition::new(x, self.bounds.pos().y()));
+            .move_to(VirtualPosition::new(virtual_x, self.bounds.pos().y()));
+    }
+
+    pub fn set_pos_x_center(&mut self, center_virtual_x: f64) {
+        let x = center_virtual_x - PLATFORM_WIDTH / 2.0;
+        self.set_pos_x(x);
     }
 }
 

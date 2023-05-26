@@ -5,7 +5,7 @@ use arkanoid_game::{
     state::draw::DrawGameState,
 };
 use wasm_bindgen::{JsCast, JsValue};
-use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
+use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, ImageData};
 
 pub struct CanvasGameStateDrawer {
     canvas: HtmlCanvasElement,
@@ -14,8 +14,12 @@ pub struct CanvasGameStateDrawer {
 
 impl CanvasGameStateDrawer {
     pub fn new(canvas: HtmlCanvasElement) -> Self {
+        let context_options = js_sys::Object::new();
+        js_sys::Reflect::set(&context_options, &"willReadFrequently".into(), &true.into())
+            .expect("failed to set object property");
+
         let ctx = canvas
-            .get_context("2d")
+            .get_context_with_context_options("2d", &context_options.into())
             .unwrap()
             .expect("failed to get 2D context from canvas")
             .dyn_into::<CanvasRenderingContext2d>()
@@ -23,17 +27,28 @@ impl CanvasGameStateDrawer {
 
         Self { ctx, canvas }
     }
+
+    pub fn get_image(&self) -> ImageData {
+        self.ctx
+            .get_image_data(
+                0.0,
+                0.0,
+                self.canvas.width() as f64,
+                self.canvas.height() as f64,
+            )
+            .expect("failed to get canvas image data")
+    }
 }
 
 impl DrawGameState for CanvasGameStateDrawer {
-    fn clear(&self) {
+    fn clear(&mut self) {
         let canvas_width = self.canvas.width() as f64;
         let canvas_height = self.canvas.height() as f64;
 
         self.ctx.clear_rect(0.0, 0.0, canvas_width, canvas_height);
     }
 
-    fn rect(&self, bounds: &Rect, color: &str, border_color: &str) {
+    fn rect(&mut self, bounds: &Rect, color: &str, border_color: &str) {
         let canvas_width = self.canvas.width() as f64;
         let canvas_height = self.canvas.height() as f64;
 
@@ -49,7 +64,7 @@ impl DrawGameState for CanvasGameStateDrawer {
         self.ctx.stroke_rect(x, y, width, height);
     }
 
-    fn circle(&self, bounds: &Circle, color: &str, border_color: &str) {
+    fn circle(&mut self, bounds: &Circle, color: &str, border_color: &str) {
         let canvas_width = self.canvas.width() as f64;
         let canvas_height = self.canvas.height() as f64;
 
