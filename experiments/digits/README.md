@@ -1,4 +1,4 @@
-Recognizing handwritten digits with NN models.
+Train NN model to recognize handwritten digits.
 
 ```
 data/        - datasets for training
