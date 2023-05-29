@@ -7,7 +7,7 @@ use zip::ZipArchive;
 
 use crate::model_type::{Model, ModelBuild};
 
-static MODEL: &[u8] = include_bytes!("../../train/models/arkanoid.npz");
+static MODEL: &[u8] = include_bytes!("../../train/models/lin-40000-10/arkanoid.npz");
 
 pub static NETWORK: Lazy<ModelBuild> = Lazy::new(|| {
     let device = AutoDevice::default();

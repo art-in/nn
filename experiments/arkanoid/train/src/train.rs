@@ -1,20 +1,18 @@
 use std::time::Instant;
 use std::usize;
 
-use dfdx::data::{ExactSizeDataset, IteratorBatchExt, IteratorCollateExt, IteratorStackExt};
+use dfdx::data::{IteratorBatchExt, IteratorCollateExt, IteratorStackExt};
 use dfdx::optim::{Adam, AdamConfig};
 use indicatif::ProgressIterator;
 
 use dfdx::prelude::*;
 use dfdx::tensor::AutoDevice;
-use rand::rngs::StdRng;
-use rand::SeedableRng;
 
 use crate::game_iterator::{GameIterator, IMAGE_SIZE, PREDICTION_POSITIONS};
 use crate::model_type::ModelBuild;
 use crate::{test, MODEL_PATH};
 
-const EPOCHS: i32 = 10;
+const EPOCHS: i32 = 50;
 const BATCH_SIZE: usize = 32;
 const GAME_STEPS: usize = 10_000;
 
@@ -27,7 +25,6 @@ pub fn train(device: &AutoDevice, model: &mut ModelBuild) {
         model.num_trainable_params()
     );
 
-    let mut rng = StdRng::seed_from_u64(0);
     let mut grads = model.alloc_grads();
     let mut opt = Adam::new(model, AdamConfig::default());
 
@@ -47,7 +44,6 @@ pub fn train(device: &AutoDevice, model: &mut ModelBuild) {
         let mut epoch_batches_count = 0;
 
         for (image, label) in game_iterator
-            .shuffled(&mut rng)
             .map(tenzorify)
             .batch_exact(Const::<BATCH_SIZE>)
             .collate()

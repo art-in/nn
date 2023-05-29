@@ -1,5 +1,4 @@
 use dfdx::{
-    data::ExactSizeDataset,
     prelude::{Module, NumParams},
     shapes::Const,
     tensor::{AutoDevice, TensorFromVec},
@@ -12,7 +11,7 @@ use crate::{
     utils,
 };
 
-const GAME_STEPS: usize = 10_000;
+const GAME_STEPS: usize = 1_000;
 
 pub fn test(device: &AutoDevice, model: &ModelBuild, is_log: bool) -> f32 {
     if is_log {
@@ -26,7 +25,7 @@ pub fn test(device: &AutoDevice, model: &ModelBuild, is_log: bool) -> f32 {
     let tensorify = |(image, label)| (device.tensor_from_vec(image, (Const::<IMAGE_SIZE>,)), label);
     let mut errors = 0;
 
-    for (image, label) in game_iterator.iter().map(tensorify).progress() {
+    for (image, label) in game_iterator.map(tensorify).progress() {
         let logits = model.forward(image);
 
         let predicted_label = utils::argmax(&logits.as_vec()) as u32;
